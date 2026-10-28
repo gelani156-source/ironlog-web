@@ -1,0 +1,803 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#090b10">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>IRONLOG</title>
+
+<style>
+:root {
+  color-scheme: dark;
+  --bg:#090b10;
+  --panel:#131721;
+  --panel2:#1b2130;
+  --text:#f4f6fc;
+  --muted:#8e98aa;
+  --line:#282f3e;
+  --accent:#a7f36b;
+  --blue:#81aaff;
+  --red:#ff727c;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  padding:env(safe-area-inset-top) 0 calc(100px + env(safe-area-inset-bottom));
+}
+button,input,textarea,select { font:inherit; }
+button { cursor:pointer; }
+.app { max-width:700px; margin:auto; padding:20px 16px; }
+.top {
+  display:flex; justify-content:space-between; align-items:center;
+  margin:8px 0 24px;
+}
+.logo { font-weight:900; font-size:26px; letter-spacing:2px; }
+.logo span { color:var(--accent); }
+.sub { color:var(--muted); font-size:12px; margin-top:4px; }
+.iconbtn {
+  border:1px solid var(--line); border-radius:14px;
+  background:var(--panel); color:var(--text);
+  padding:11px 14px;
+}
+.hero {
+  border:1px solid #293342;
+  border-radius:24px; padding:22px;
+  background:linear-gradient(140deg,#1b2531,#11151e 70%);
+  margin-bottom:20px;
+}
+.eyebrow {
+  color:var(--accent); font-size:11px; font-weight:800;
+  letter-spacing:1.8px; text-transform:uppercase;
+}
+.hero h1 { margin:10px 0 6px; font-size:29px; }
+.hero p { margin:0; color:var(--muted); font-size:14px; }
+.stats {
+  display:grid; grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:9px; margin-top:22px;
+}
+.stat { background:#ffffff08; padding:12px 9px; border-radius:15px; }
+.stat strong { display:block; font-size:21px; }
+.stat span { color:var(--muted); font-size:11px; }
+.sectionhead {
+  display:flex; align-items:center; justify-content:space-between;
+  gap:10px; margin:26px 0 12px;
+}
+.sectionhead h2 { font-size:19px; margin:0; }
+.muted { color:var(--muted); }
+.card {
+  background:var(--panel); border:1px solid var(--line);
+  border-radius:19px; padding:16px; margin-bottom:11px;
+}
+.exercise {
+  display:flex; align-items:center; gap:12px;
+}
+.check {
+  width:25px; height:25px; flex:0 0 25px;
+  accent-color:var(--accent);
+}
+.exercise-main { min-width:0; flex:1; }
+.exercise-name { font-weight:750; font-size:15px; overflow-wrap:anywhere; }
+.exercise-detail { color:var(--muted); font-size:13px; margin-top:5px; }
+.done .exercise-name { text-decoration:line-through; color:var(--muted); }
+.pill {
+  font-size:11px; color:var(--accent); background:#a7f36b14;
+  border-radius:9px; padding:7px 9px; white-space:nowrap;
+}
+.primary {
+  width:100%; border:0; border-radius:15px; padding:15px;
+  background:var(--accent); color:#10150b; font-weight:850;
+}
+.secondary {
+  border:1px solid var(--line); background:var(--panel2);
+  color:var(--text); border-radius:12px; padding:11px 13px;
+}
+.danger { color:var(--red); }
+.field { margin:12px 0; }
+.field label { display:block; color:var(--muted); font-size:12px; margin-bottom:7px; }
+input,textarea,select {
+  width:100%; color:var(--text); background:#0c1018;
+  border:1px solid var(--line); border-radius:12px; padding:13px;
+  outline:none;
+}
+textarea { min-height:180px; resize:vertical; line-height:1.55; }
+input:focus,textarea:focus { border-color:var(--accent); }
+.row { display:flex; gap:9px; }
+.row > * { flex:1; min-width:0; }
+.nav {
+  position:fixed; bottom:0; left:0; right:0; z-index:10;
+  display:grid; grid-template-columns:repeat(4,1fr); gap:4px;
+  padding:10px 10px calc(10px + env(safe-area-inset-bottom));
+  background:#10131bed; backdrop-filter:blur(20px);
+  border-top:1px solid var(--line);
+}
+.nav button {
+  border:0; background:transparent; color:var(--muted);
+  border-radius:13px; padding:9px 2px; font-size:11px;
+}
+.nav button.active { background:#a7f36b18; color:var(--accent); }
+.nav .ico { display:block; font-size:20px; margin-bottom:5px; }
+.progress {
+  height:7px; border-radius:10px; overflow:hidden;
+  background:#282f3e; margin:13px 0 3px;
+}
+.progress div { height:100%; background:var(--accent); transition:width .2s; }
+.empty { color:var(--muted); text-align:center; padding:28px 10px; }
+.timer {
+  font-size:58px; font-weight:850; text-align:center;
+  letter-spacing:2px; padding:25px 0 15px;
+  font-variant-numeric:tabular-nums;
+}
+.timerbuttons { display:flex; justify-content:center; gap:9px; }
+.measuregrid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.measureitem { background:#0c1018; border-radius:14px; padding:13px; }
+.measureitem strong { display:block; font-size:20px; margin-top:6px; }
+.small { font-size:12px; color:var(--muted); }
+hr { border:0; border-top:1px solid var(--line); margin:17px 0; }
+.toast {
+  position:fixed; z-index:20; bottom:100px; left:50%;
+  transform:translateX(-50%); background:#eafbdc; color:#10150b;
+  padding:12px 17px; border-radius:14px; font-size:13px;
+  font-weight:750; box-shadow:0 8px 30px #0008;
+  max-width:90%; text-align:center;
+}
+.hidden { display:none !important; }
+h3 { font-size:15px; }
+@media(min-width:600px) {
+  .app { padding:28px 24px; }
+  .hero h1 { font-size:34px; }
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+  <header class="top">
+    <div>
+      <div class="logo">IRON<span>LOG</span></div>
+      <div class="sub">TRAINING SYSTEM · 1.0 WEB</div>
+    </div>
+    <button class="iconbtn" onclick="showTab('settings')">⚙️</button>
+  </header>
+
+  <main id="screen"></main>
+</div>
+
+<nav class="nav">
+  <button data-tab="today" class="active" onclick="showTab('today')"><span class="ico">◉</span>Сегодня</button>
+  <button data-tab="plan" onclick="showTab('plan')"><span class="ico">▤</span>План</button>
+  <button data-tab="history" onclick="showTab('history')"><span class="ico">▦</span>История</button>
+  <button data-tab="progress" onclick="showTab('progress')"><span class="ico">↗</span>Прогресс</button>
+</nav>
+
+<script>
+"use strict";
+
+const STORE_KEY = "ironlog-web-data-v1";
+
+function defaultData() {
+  return {
+    plan: "",
+    workouts: [],
+    measurements: [],
+    activeWorkout: null,
+    timerEnd: null,
+    timerLength: 90
+  };
+}
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    return raw ? {...defaultData(), ...JSON.parse(raw)} : defaultData();
+  } catch(e) {
+    return defaultData();
+  }
+}
+
+let data = loadData();
+let currentTab = "today";
+let timerInterval = null;
+
+function saveData() {
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify(data));
+  } catch(e) {
+    toast("Не удалось сохранить данные. Проверь свободное место.");
+  }
+}
+
+function todayKey() {
+  const d = new Date();
+  return d.getFullYear() + "-" +
+    String(d.getMonth()+1).padStart(2,"0") + "-" +
+    String(d.getDate()).padStart(2,"0");
+}
+
+function dateLabel(date) {
+  return new Date(date + "T12:00:00").toLocaleDateString("ru-RU", {
+    day:"numeric", month:"long", year:"numeric"
+  });
+}
+
+function esc(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+  })[c]);
+}
+
+function toast(message) {
+  document.querySelector(".toast")?.remove();
+  const el = document.createElement("div");
+  el.className = "toast";
+  el.textContent = message;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2300);
+}
+
+/*
+  Поддерживаемые примеры:
+  Жим 87,5 3/8
+  Присед 92,5 4/6
+  Лодочка 4/10
+  Жим лёжа 80 кг 4х6
+  - [ ] Тяга 100 3x8
+*/
+
+function parseExerciseLine(line) {
+  let original = line.trim();
+  if (!original) return null;
+
+  original = original
+    .replace(/^[-*•]\s*/, "")
+    .replace(/^\[\s*[xX ]\s*\]\s*/, "")
+    .trim();
+
+  if (!original || /^#{1,6}\s/.test(original)) return null;
+  if (/^(понедельник|вторник|среда|четверг|пятница|суббота|воскресенье|пн|вт|ср|чт|пт|сб|вс)\s*$/i.test(original)) {
+    return {type:"heading", name:original};
+  }
+
+  const pattern = /^(.*?)\s+(\d+(?:[.,]\d+)?)\s*(?:кг)?\s+(\d+)\s*(?:\/|х|x|×)\s*(\d+)(?:\s*(?:раз|повтор(?:а|ений)?))?$/i;
+  const match = original.match(pattern);
+
+  if (match) {
+    return {
+      type:"exercise",
+      name:match[1].trim(),
+      weight:match[2].replace(",", "."),
+      sets:parseInt(match[3],10),
+      reps:parseInt(match[4],10),
+      done:false
+    };
+  }
+
+  const setsOnly = original.match(/^(.*?)\s+(\d+)\s*(?:подход(?:а|ов)?|сета?)$/i);
+  if (setsOnly) {
+    return {
+      type:"exercise", name:setsOnly[1].trim(),
+      weight:"", sets:parseInt(setsOnly[2],10), reps:0, done:false
+    };
+  }
+
+  return {
+    type:"exercise", name:original,
+    weight:"", sets:0, reps:0, done:false
+  };
+}
+
+function parsePlan(text) {
+  return text.split(/\r?\n/)
+    .map(parseExerciseLine)
+    .filter(Boolean);
+}
+
+function activeWorkout() {
+  if (!data.activeWorkout) {
+    data.activeWorkout = {
+      date:todayKey(),
+      title:"Тренировка",
+      items:parsePlan(data.plan)
+    };
+    saveData();
+  }
+  return data.activeWorkout;
+}
+
+function newWorkout() {
+  if (data.activeWorkout &&
+      data.activeWorkout.items.some(x => x.type === "exercise" && x.done)) {
+    if (!confirm("Текущая тренировка содержит выполненные упражнения. Завершить её и начать новую?")) return;
+    finishWorkout(false);
+  }
+  data.activeWorkout = {
+    date:todayKey(),
+    title:"Тренировка",
+    items:parsePlan(data.plan)
+  };
+  saveData();
+  render();
+  toast("Новая тренировка создана");
+}
+
+function finishWorkout(showMessage=true) {
+  const w = data.activeWorkout;
+  if (!w) return;
+  if (!w.items.some(x => x.type === "exercise")) {
+    toast("Сначала добавь упражнения в разделе «План»");
+    return;
+  }
+
+  data.workouts.unshift({
+    id:Date.now(),
+    date:w.date || todayKey(),
+    title:w.title || "Тренировка",
+    items:w.items.map(x=>({...x})),
+    completedAt:new Date().toISOString()
+  });
+  data.activeWorkout = null;
+  saveData();
+  render();
+  if (showMessage) toast("Тренировка сохранена в истории");
+}
+
+function toggleExercise(index, checked) {
+  const w = activeWorkout();
+  if (!w.items[index]) return;
+  w.items[index].done = checked;
+  saveData();
+  render();
+}
+
+function showTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll(".nav button").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.tab === tab);
+  });
+  render();
+}
+
+function render() {
+  const root = document.getElementById("screen");
+  if (currentTab === "today") root.innerHTML = renderToday();
+  else if (currentTab === "plan") root.innerHTML = renderPlan();
+  else if (currentTab === "history") root.innerHTML = renderHistory();
+  else if (currentTab === "progress") root.innerHTML = renderProgress();
+  else if (currentTab === "timer") root.innerHTML = renderTimer();
+  else if (currentTab === "settings") root.innerHTML = renderSettings();
+  updateTimerDisplay();
+}
+
+function renderToday() {
+  const w = activeWorkout();
+  const exercises = w.items
+    .map((item,index)=>({...item,index}))
+    .filter(item=>item.type === "exercise");
+  const done = exercises.filter(x=>x.done).length;
+  const pct = exercises.length ? Math.round(done/exercises.length*100) : 0;
+
+  let cards = w.items.map((item,index) => {
+    if (item.type === "heading") {
+      return `<div class="sectionhead"><h2>${esc(item.name)}</h2></div>`;
+    }
+    return `
+      <div class="card exercise ${item.done?"done":""}">
+        <input class="check" type="checkbox" ${item.done?"checked":""}
+          onchange="toggleExercise(${index},this.checked)" aria-label="Выполнено">
+        <div class="exercise-main">
+          <div class="exercise-name">${esc(item.name)}</div>
+          <div class="exercise-detail">
+            ${item.weight ? esc(item.weight)+" кг · " : ""}
+            ${item.sets ? esc(item.sets)+" подхода · " : ""}
+            ${item.reps ? esc(item.reps)+" повторений" : item.sets ? "повторения не указаны" : "параметры не указаны"}
+          </div>
+        </div>
+        ${item.done ? '<span class="pill">ГОТОВО</span>' : ""}
+      </div>`;
+  }).join("");
+
+  return `
+    <section class="hero">
+      <div class="eyebrow">ТРЕНИРОВКА · ${esc(dateLabel(todayKey()))}</div>
+      <h1>Работай на результат.</h1>
+      <p>Каждый подход приближает к цели.</p>
+      <div class="stats">
+        <div class="stat"><strong>${done}/${exercises.length}</strong><span>упражнений</span></div>
+        <div class="stat"><strong>${pct}%</strong><span>выполнено</span></div>
+        <div class="stat"><strong>${data.workouts.length}</strong><span>тренировок</span></div>
+      </div>
+      <div class="progress"><div style="width:${pct}%"></div></div>
+    </section>
+
+    <div class="sectionhead">
+      <h2>Текущая тренировка</h2>
+      <button class="secondary" onclick="newWorkout()">＋ Новая</button>
+    </div>
+
+    ${exercises.length ? cards : `
+      <div class="card empty">
+        <div style="font-size:32px">🏋️</div>
+        <p>Пока здесь пусто.</p>
+        <p>Добавь свой тренировочный план, и упражнения появятся здесь.</p>
+        <button class="secondary" onclick="showTab('plan')">Открыть план</button>
+      </div>`}
+
+    <div class="row" style="margin-top:16px">
+      <button class="secondary" onclick="showTab('timer')">⏱ Таймер отдыха</button>
+      <button class="primary" onclick="finishWorkout()">Завершить</button>
+    </div>
+  `;
+}
+
+function renderPlan() {
+  return `
+    <div class="sectionhead"><h2>Мой план</h2></div>
+    <div class="card">
+      <p class="muted" style="font-size:13px;line-height:1.6">
+        Вставь тренировку обычным текстом. Поддерживаются строки вроде
+        <b>Жим 87,5 3/8</b>, <b>Присед 92,5 4/6</b> и заголовки дней недели.
+        Каждое упражнение начинай с новой строки.
+      </p>
+      <div class="field">
+        <label>ПЛАН ТРЕНИРОВОК</label>
+        <textarea id="planText" placeholder="Среда
+Лодочка 4/10
+Жим 80 4/6
+Присед 92,5 3/8">${esc(data.plan)}</textarea>
+      </div>
+      <button class="primary" onclick="savePlan()">Сохранить план</button>
+    </div>
+    <div class="card">
+      <h3>Как записывать упражнения</h3>
+      <p class="small">Жим 87,5 3/8</p>
+      <p class="small">Присед 92,5 4/6</p>
+      <p class="small">Лодочка 4/10</p>
+      <p class="small">Тяга 100 кг 3х8</p>
+      <hr>
+      <p class="small">Формат: название, вес (необязательно), подходы/повторения.</p>
+    </div>
+    <button class="secondary" style="width:100%" onclick="previewPlan()">Предпросмотр разбора</button>
+    <div id="planPreview"></div>
+  `;
+}
+
+function savePlan() {
+  const input = document.getElementById("planText");
+  data.plan = input.value.trim();
+  saveData();
+
+  if (!data.activeWorkout ||
+      !data.activeWorkout.items.some(x=>x.done)) {
+    data.activeWorkout = {
+      date:todayKey(),
+      title:"Тренировка",
+      items:parsePlan(data.plan)
+    };
+  }
+
+  saveData();
+  toast("План сохранён");
+  showTab("today");
+}
+
+function previewPlan() {
+  const text = document.getElementById("planText").value;
+  const parsed = parsePlan(text);
+  const box = document.getElementById("planPreview");
+  box.innerHTML = `
+    <div class="card">
+      <h3>Результат разбора</h3>
+      ${parsed.length ? parsed.map(x=>`
+        <p class="small">${x.type==="heading"?"▰ "+esc(x.name):
+          "• "+esc(x.name)+(x.weight?" · "+esc(x.weight)+" кг":"")+
+          (x.sets?" · "+x.sets+" × "+(x.reps||"?"):"")}</p>
+      `).join("") : '<p class="muted">Упражнения не найдены.</p>'}
+    </div>`;
+}
+
+function renderHistory() {
+  if (!data.workouts.length) {
+    return `
+      <div class="sectionhead"><h2>История тренировок</h2></div>
+      <div class="card empty">
+        <div style="font-size:32px">▦</div>
+        <p>История пока пуста.</p>
+        <p>Заверши первую тренировку, и она появится здесь.</p>
+      </div>`;
+  }
+
+  return `
+    <div class="sectionhead">
+      <h2>История</h2>
+      <span class="muted">${data.workouts.length} шт.</span>
+    </div>
+    ${data.workouts.map(w=>{
+      const ex = w.items.filter(x=>x.type==="exercise");
+      const done = ex.filter(x=>x.done).length;
+      return `
+        <div class="card">
+          <div class="eyebrow">${esc(dateLabel(w.date))}</div>
+          <h3>${esc(w.title || "Тренировка")}</h3>
+          <p class="muted">${done} из ${ex.length} упражнений выполнено</p>
+          <button class="secondary" onclick="viewWorkout(${w.id})">Подробнее</button>
+          <button class="secondary danger" onclick="deleteWorkout(${w.id})">Удалить</button>
+        </div>`;
+    }).join("")}
+    <div id="historyDetail"></div>
+  `;
+}
+
+function viewWorkout(id) {
+  const w = data.workouts.find(x=>x.id===id);
+  if (!w) return;
+  const detail = document.getElementById("historyDetail");
+  detail.innerHTML = `
+    <div class="card">
+      <h3>${esc(dateLabel(w.date))}</h3>
+      ${w.items.map(x=>x.type==="heading"
+        ? `<p class="eyebrow">${esc(x.name)}</p>`
+        : `<p>${x.done?"☑":"☐"} ${esc(x.name)} <span class="muted">${x.weight?esc(x.weight)+" кг ":""}${x.sets?x.sets+" × "+(x.reps||"?"):""}</span></p>`
+      ).join("")}
+    </div>`;
+  detail.scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function deleteWorkout(id) {
+  if (!confirm("Удалить эту тренировку из истории?")) return;
+  data.workouts = data.workouts.filter(w=>w.id!==id);
+  saveData();
+  render();
+  toast("Тренировка удалена");
+}
+
+function renderProgress() {
+  const latest = data.measurements[0];
+  return `
+    <div class="sectionhead"><h2>Прогресс и замеры</h2></div>
+    <div class="hero">
+      <div class="eyebrow">ТВОЯ СТАТИСТИКА</div>
+      <h1>${data.workouts.length} тренировок</h1>
+      <p>Записывай замеры, чтобы следить за изменениями.</p>
+      <div class="stats">
+        <div class="stat"><strong>${data.measurements.length}</strong><span>замеров</span></div>
+        <div class="stat"><strong>${latest?.weight ?? "–"}</strong><span>вес, кг</span></div>
+        <div class="stat"><strong>${latest?.waist ?? "–"}</strong><span>талия, см</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Добавить замер</h3>
+      <div class="field">
+        <label>Дата</label>
+        <input id="mDate" type="date" value="${todayKey()}">
+      </div>
+      <div class="measuregrid">
+        <div class="field"><label>Вес, кг</label><input id="mWeight" type="number" step="0.1" placeholder="82.0"></div>
+        <div class="field"><label>Талия, см</label><input id="mWaist" type="number" step="0.1" placeholder="82"></div>
+        <div class="field"><label>Грудь, см</label><input id="mChest" type="number" step="0.1" placeholder="100"></div>
+        <div class="field"><label>Бёдра, см</label><input id="mHips" type="number" step="0.1" placeholder="96"></div>
+        <div class="field"><label>Бицепс, см</label><input id="mArm" type="number" step="0.1" placeholder="38"></div>
+        <div class="field"><label>Бедро, см</label><input id="mThigh" type="number" step="0.1" placeholder="58"></div>
+      </div>
+      <button class="primary" onclick="saveMeasurement()">Сохранить замер</button>
+    </div>
+
+    <div class="sectionhead"><h2>История замеров</h2></div>
+    ${data.measurements.length ? data.measurements.map(m=>`
+      <div class="card">
+        <div class="eyebrow">${esc(dateLabel(m.date))}</div>
+        <div class="measuregrid" style="margin-top:12px">
+          ${Object.entries({
+            "Вес, кг":m.weight,"Талия, см":m.waist,
+            "Грудь, см":m.chest,"Бёдра, см":m.hips,
+            "Бицепс, см":m.arm,"Бедро, см":m.thigh
+          }).filter(([k,v])=>v!==""&&v!=null).map(([k,v])=>
+            `<div class="measureitem"><span class="small">${k}</span><strong>${esc(v)}</strong></div>`
+          ).join("")}
+        </div>
+        <button class="secondary danger" style="margin-top:12px" onclick="deleteMeasurement(${m.id})">Удалить замер</button>
+      </div>
+    `).join("") : '<div class="card empty">Замеров пока нет.</div>'}
+  `;
+}
+
+function saveMeasurement() {
+  const get = id => document.getElementById(id).value;
+  const fields = {
+    weight:get("mWeight"), waist:get("mWaist"),
+    chest:get("mChest"), hips:get("mHips"),
+    arm:get("mArm"), thigh:get("mThigh")
+  };
+  if (Object.values(fields).every(v=>v==="")) {
+    toast("Введи хотя бы один показатель");
+    return;
+  }
+  data.measurements.unshift({
+    id:Date.now(),
+    date:get("mDate") || todayKey(),
+    ...fields
+  });
+  data.measurements.sort((a,b)=>b.date.localeCompare(a.date));
+  saveData();
+  render();
+  toast("Замер сохранён");
+}
+
+function deleteMeasurement(id) {
+  if (!confirm("Удалить этот замер?")) return;
+  data.measurements = data.measurements.filter(m=>m.id!==id);
+  saveData();
+  render();
+}
+
+function renderTimer() {
+  return `
+    <div class="sectionhead"><h2>Таймер отдыха</h2></div>
+    <div class="card">
+      <div class="eyebrow" style="text-align:center">REST TIMER</div>
+      <div id="timerValue" class="timer">01:30</div>
+      <div class="timerbuttons">
+        <button class="secondary" onclick="setTimer(60)">1 мин</button>
+        <button class="secondary" onclick="setTimer(90)">1:30</button>
+        <button class="secondary" onclick="setTimer(120)">2 мин</button>
+        <button class="secondary" onclick="setTimer(180)">3 мин</button>
+      </div>
+      <hr>
+      <div class="row">
+        <button class="primary" onclick="startTimer()">Старт</button>
+        <button class="secondary" onclick="pauseTimer()">Пауза</button>
+        <button class="secondary" onclick="resetTimer()">Сброс</button>
+      </div>
+      <p class="small" style="text-align:center;margin-top:16px">
+        Оставь страницу открытой во время отдыха для обновления таймера.
+      </p>
+    </div>
+    <button class="secondary" style="width:100%" onclick="showTab('today')">← К тренировке</button>
+  `;
+}
+
+function setTimer(seconds) {
+  data.timerLength = seconds;
+  data.timerEnd = null;
+  saveData();
+  updateTimerDisplay();
+}
+
+function startTimer() {
+  if (!data.timerEnd) data.timerEnd = Date.now() + data.timerLength*1000;
+  saveData();
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(tickTimer,250);
+  tickTimer();
+}
+
+function pauseTimer() {
+  if (data.timerEnd) {
+    data.timerLength = Math.max(0,Math.ceil((data.timerEnd-Date.now())/1000));
+  }
+  data.timerEnd = null;
+  saveData();
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = null;
+  updateTimerDisplay();
+}
+
+function resetTimer() {
+  data.timerEnd = null;
+  data.timerLength = 90;
+  saveData();
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = null;
+  updateTimerDisplay();
+}
+
+function tickTimer() {
+  if (!data.timerEnd) return;
+  if (Date.now() >= data.timerEnd) {
+    data.timerLength = 0;
+    data.timerEnd = null;
+    saveData();
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = null;
+    updateTimerDisplay();
+    toast("Отдых окончен. Следующий подход! 💪");
+    if ("vibrate" in navigator) navigator.vibrate([200,100,200]);
+    return;
+  }
+  updateTimerDisplay();
+}
+
+function updateTimerDisplay() {
+  const el = document.getElementById("timerValue");
+  if (!el) return;
+  const seconds = data.timerEnd
+    ? Math.max(0,Math.ceil((data.timerEnd-Date.now())/1000))
+    : data.timerLength;
+  const mins = Math.floor(seconds/60);
+  const secs = seconds%60;
+  el.textContent = String(mins).padStart(2,"0")+":"+String(secs).padStart(2,"0");
+}
+
+function renderSettings() {
+  return `
+    <div class="sectionhead"><h2>Настройки</h2></div>
+    <div class="card">
+      <h3>Данные IRONLOG</h3>
+      <p class="muted" style="font-size:13px;line-height:1.6">
+        Тренировки, план и замеры сохраняются в локальном хранилище браузера на этом устройстве.
+        Они не загружаются в GitHub.
+      </p>
+      <button class="primary" onclick="exportData()">Экспортировать резервную копию</button>
+      <hr>
+      <label class="secondary" style="display:block;text-align:center;cursor:pointer">
+        Импортировать резервную копию
+        <input type="file" accept="application/json,.json" onchange="importData(event)" style="display:none">
+      </label>
+    </div>
+    <div class="card">
+      <h3>Важное</h3>
+      <p class="small">Не очищай данные Safari, если не сделал резервную копию.</p>
+      <p class="small">Для переноса данных на другое устройство используй экспорт и импорт.</p>
+    </div>
+    <div class="card">
+      <h3>Сброс приложения</h3>
+      <p class="small">Это удалит локальные тренировки, историю и замеры.</p>
+      <button class="secondary danger" onclick="resetAll()">Удалить все данные</button>
+    </div>
+  `;
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "ironlog-backup-"+todayKey()+".json";
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+  toast("Резервная копия подготовлена");
+}
+
+function importData(event) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const imported = JSON.parse(reader.result);
+      if (!imported || !Array.isArray(imported.workouts) ||
+          !Array.isArray(imported.measurements)) {
+        throw new Error("Неверный формат");
+      }
+      data = {...defaultData(),...imported};
+      saveData();
+      render();
+      toast("Данные импортированы");
+    } catch(e) {
+      alert("Не удалось импортировать файл. Проверь, что это резервная копия IRONLOG.");
+    }
+  };
+  reader.readAsText(file);
+}
+
+function resetAll() {
+  if (!confirm("Точно удалить все тренировки, план и замеры? Это действие нельзя отменить.")) return;
+  data = defaultData();
+  saveData();
+  render();
+  toast("Данные очищены");
+}
+
+document.addEventListener("visibilitychange",()=>{
+  if (!document.hidden && data.timerEnd) tickTimer();
+});
+
+render();
+</script>
+</body>
+</html>
