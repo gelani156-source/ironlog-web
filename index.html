@@ -10,6 +10,7 @@
   <meta name="apple-mobile-web-app-title" content="IRONLOG">
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='100' fill='%230d0f12'/><path d='M120 256h272M160 180v152M352 180v152M200 200v112M312 200v112' stroke='%2322c55e' stroke-width='36' stroke-linecap='round'/></svg>">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
     :root {
       --bg: #090a0d;
@@ -18,7 +19,7 @@
       --border: #232a38;
       --border-focus: #22c55e;
       --accent: #22c55e;
-      --accent-dim: rgba(34, 197, 94, 0.12);
+      --accent-dim: rgba(34, 197, 94, 0.15);
       --text: #f9fafb;
       --muted: #8b949e;
       --danger: #ef4444;
@@ -37,13 +38,13 @@
       background-color: var(--bg);
       color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
-      padding: calc(env(safe-area-inset-top, 20px) + 12px) 16px calc(env(safe-area-inset-bottom, 20px) + 80px) 16px;
+      padding: calc(env(safe-area-inset-top, 20px) + 12px) 16px calc(env(safe-area-inset-bottom, 20px) + 85px) 16px;
       user-select: none;
       -webkit-user-select: none;
       overflow-x: hidden;
     }
 
-    /* HEADER */
+    /* ШАПКА */
     header {
       display: flex;
       justify-content: space-between;
@@ -78,11 +79,11 @@
       cursor: pointer;
     }
 
-    /* CARDS */
+    /* КАРТОЧКИ И ПАНЕЛИ */
     .section-title {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 700;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
     .card {
       background: var(--card);
@@ -110,7 +111,7 @@
       margin-bottom: 14px;
     }
 
-    /* STATS ROW */
+    /* СЕТКА СТАТИСТИКИ */
     .stat-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -120,7 +121,7 @@
       background: var(--card-inner);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
-      padding: 12px 8px;
+      padding: 12px 6px;
       text-align: center;
     }
     .stat-box-val {
@@ -134,7 +135,7 @@
       margin-top: 4px;
     }
 
-    /* INPUTS & FORMS */
+    /* ПОЛЯ ВВОДА */
     .form-group {
       margin-bottom: 12px;
     }
@@ -168,11 +169,11 @@
     }
     input[type="date"] {
       -webkit-appearance: none;
-      min-height: 44px;
+      min-height: 46px;
       color: var(--text);
     }
 
-    /* BUTTONS */
+    /* КНОПКИ */
     .btn {
       width: 100%;
       background: var(--accent);
@@ -204,14 +205,70 @@
       border: 1px solid rgba(239, 68, 68, 0.25);
     }
 
-    /* BOTTOM NAV */
+    /* КАРТОЧКИ УПРАЖНЕНИЙ И ЧЕКБОКСЫ */
+    .exercise-card {
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      margin-bottom: 12px;
+      border-left: 4px solid var(--accent);
+    }
+    .exercise-card.all-done {
+      border-left-color: #3b82f6;
+      opacity: 0.75;
+    }
+    .set-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 9px 12px;
+      margin-top: 6px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      border: 1px solid transparent;
+    }
+    .set-row.done {
+      background: rgba(34, 197, 94, 0.12);
+      border-color: rgba(34, 197, 94, 0.3);
+    }
+    .set-info {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .set-row.done .set-info {
+      text-decoration: line-through;
+      color: var(--muted);
+    }
+    .check-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .set-row.done .check-btn {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #000;
+      font-weight: bold;
+    }
+
+    /* НИЖНЕЕ МЕНЮ */
     nav.bottom-nav {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
       height: calc(56px + env(safe-area-inset-bottom, 0px));
-      background: rgba(9, 10, 13, 0.92);
+      background: rgba(9, 10, 13, 0.94);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-top: 1px solid var(--border);
@@ -234,7 +291,6 @@
       width: 25%;
       border-radius: 12px;
       padding: 4px 0;
-      transition: color 0.15s;
     }
     .nav-tab.active {
       color: var(--accent);
@@ -263,6 +319,7 @@
   </style>
 </head>
 
+
 <body>
 
   <header>
@@ -273,7 +330,7 @@
     <div class="icon-btn" onclick="switchTab('analytics', document.querySelectorAll('.nav-tab')[3])">⚙️</div>
   </header>
 
-  <!-- ВКЛАДКА 1: ПРОГРЕСС И ЗАМЕРЫ (КАК НА СКРИНШОТЕ) -->
+  <!-- ЭКРАН 1: ПРОГРЕСС И ЗАМЕРЫ -->
   <section id="screen-progress" class="screen active">
     <div class="card">
       <div class="card-label">Твоя статистика</div>
@@ -296,12 +353,12 @@
       </div>
     </div>
 
-    <!-- ФОРМА ДОБАВЛЕНИЯ ЗАМЕРА -->
+    <!-- ВВОД НОВОГО ЗАМЕРА -->
     <div class="card">
-      <div class="section-title" style="font-size: 17px; margin-bottom: 12px;">Добавить замер</div>
+      <div class="section-title">Добавить замер</div>
       
       <div class="form-group">
-        <label class="field-label">Дата</label>
+        <label class="field-label">Дата замера</label>
         <input type="date" id="mDate">
       </div>
 
@@ -332,43 +389,43 @@
         <input type="number" step="0.5" id="mArm" placeholder="38">
       </div>
 
-      <button class="btn" style="margin-top: 8px;" onclick="saveMeasurement()">Сохранить замер</button>
+      <button class="btn" onclick="saveMeasurement()">Сохранить замер</button>
     </div>
 
     <div class="card">
-      <div class="section-title" style="font-size: 16px;">Динамика веса тела</div>
+      <div class="section-title">Динамика веса тела</div>
       <div class="chart-container">
         <canvas id="chartWeight"></canvas>
       </div>
     </div>
   </section>
 
-  <!-- ВКЛАДКА 2: СЕГОДНЯ / ЖУРНАЛ -->
+  <!-- ЭКРАН 2: СЕГОДНЯ / ЖУРНАЛ С ГАЛОЧКАМИ -->
   <section id="screen-today" class="screen">
     <div class="card">
-      <div class="card-label">Импорт тренировки</div>
+      <div class="card-label">Импорт тренировки из заметок</div>
       <textarea id="planInput" rows="3" placeholder="Вставьте текст (например: Жим 105 1/6, Присед 115 5/5)..."></textarea>
       <button class="btn" style="margin-top: 10px;" onclick="parseAndSavePlan()">Распознать и записать</button>
     </div>
 
     <div class="card">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-        <div class="section-title" style="font-size: 17px; margin: 0;">Тренировка сегодня</div>
+        <div class="section-title" style="margin: 0;">Тренировка сегодня</div>
         <span id="sessionVolume" style="color: var(--accent); font-weight: 700; font-size: 13px;">0 кг</span>
       </div>
       <div id="todayList">
         <p style="color: var(--muted); font-size: 14px;">Сегодня тренировок пока нет.</p>
       </div>
-      <div id="clearDayBtnBox" style="display: none; margin-top: 12px;">
-        <button class="btn btn-danger" onclick="clearToday()">Очистить день</button>
+      <div id="clearDayBtnBox" style="display: none; margin-top: 14px;">
+        <button class="btn btn-danger" onclick="clearToday()">Очистить сегодняшнюю сессию</button>
       </div>
     </div>
   </section>
 
-  <!-- ВКЛАДКА 3: ТАЙМЕР ОТДЫХА -->
+  <!-- ЭКРАН 3: ТАЙМЕР ОТДЫХА -->
   <section id="screen-timer" class="screen">
     <div class="card" style="text-align: center; padding: 26px 16px;">
-      <div class="card-label">Таймер между подходами</div>
+      <div class="card-label">Отдых между подходами</div>
       <div class="timer-val" id="timerCount">01:30</div>
       <div class="input-row">
         <button class="btn" id="timerStartBtn" onclick="toggleTimer()">Старт</button>
@@ -381,10 +438,10 @@
     </div>
   </section>
 
-  <!-- ВКЛАДКА 4: АНАЛИТИКА / НАСТРОЙКИ -->
+  <!-- ЭКРАН 4: ГРАФИКИ И БЭКАП -->
   <section id="screen-analytics" class="screen">
     <div class="card">
-      <div class="section-title" style="font-size: 17px;">График упражнения (1ПМ)</div>
+      <div class="section-title">График упражнения (1ПМ)</div>
       <select id="exerciseSelect" onchange="renderExerciseChart()" style="margin-bottom: 12px;"></select>
       <div class="chart-container">
         <canvas id="chartExercise"></canvas>
@@ -392,8 +449,8 @@
     </div>
 
     <div class="card">
-      <div class="section-title" style="font-size: 17px;">Резервное копирование</div>
-      <p style="color: var(--muted); font-size: 13px; margin-bottom: 12px;">Экспорт всей базы тренировок и замеров в JSON файл.</p>
+      <div class="section-title">Резервная копия данных</div>
+      <p style="color: var(--muted); font-size: 13px; margin-bottom: 12px;">Сохраните файл бэкапа в iCloud, чтобы данные никогда не потерялись.</p>
       <div class="input-row">
         <button class="btn btn-secondary" onclick="exportDataJson()">Скачать JSON</button>
         <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">Загрузить</button>
@@ -402,7 +459,7 @@
     </div>
   </section>
 
-  <!-- BOTTOM BAR -->
+  <!-- НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ -->
   <nav class="bottom-nav">
     <button class="nav-tab active" onclick="switchTab('progress', this)">
       <span class="nav-icon">📈</span>Прогресс
@@ -420,6 +477,7 @@
 
 
   <script>
+    // ХРАНИЛИЩЕ В ПАМЯТИ ТЕЛЕФОНА
     const STORAGE_KEY = "ironlog_db_v1";
 
     function defaultData() {
@@ -450,6 +508,7 @@
       ].join("-");
     }
 
+    // СКЛОНЕНИЯ СЛОВ НА РУССКОМ
     function pluralWorkouts(count) {
       const c = Math.abs(count) % 100;
       const n1 = c % 10;
@@ -465,48 +524,7 @@
       return r === 1 ? w : w * (1 + r / 30);
     }
 
-    // ==========================================
-    // ЗАМЕРЫ
-    // ==========================================
-    function initDatePicker() {
-      const today = dateKey(new Date());
-      document.getElementById("mDate").value = today;
-    }
-
-    function saveMeasurement() {
-      const chosenDate = document.getElementById("mDate").value || dateKey(new Date());
-      const weight = parseFloat(document.getElementById("mWeight").value) || 0;
-      const waist = parseFloat(document.getElementById("mWaist").value) || 0;
-      const chest = parseFloat(document.getElementById("mChest").value) || 0;
-      const thigh = parseFloat(document.getElementById("mThigh").value) || 0;
-      const arm = parseFloat(document.getElementById("mArm").value) || 0;
-
-      if (!weight && !waist && !chest && !thigh && !arm) {
-        alert("Заполните хотя бы один показатель!");
-        return;
-      }
-
-      const existingIdx = data.measurements.findIndex(m => dateKey(m.date) === chosenDate);
-      const record = {
-        id: Date.now().toString(36),
-        date: new Date(chosenDate + "T12:00:00").toISOString(),
-        weight, waist, chest, thigh, arm
-      };
-
-      if (existingIdx !== -1) {
-        data.measurements[existingIdx] = record;
-      } else {
-        data.measurements.push(record);
-      }
-
-      data.measurements.sort((a, b) => new Date(a.date) - new Date(b.date));
-      saveData();
-      alert("Замер сохранен!");
-    }
-
-    // ==========================================
-    // ПАРСЕР И ТРЕНИРОВКИ (IRONLOG 8.1)
-    // ==========================================
+    // ПАРСЕР ТЕКСТА ТРЕНИРОВОК
     function parseSingleItem(rawContent) {
       let text = String(rawContent || "").trim()
         .replace(/^\s*[-*•]\s*/, "")
@@ -521,15 +539,17 @@
       if (!text || text.length < 2) return null;
       if (/^(понедельник|вторник|среда|четверг|пятница|суббота|воскресенье)$/i.test(text)) return null;
 
+      // Формат: Шраги 4/20 60
       const reverseFormat = text.match(/^(.+?)\s+(\d+)\s*[\/xх*]\s*(\d+)\s+(\d+(?:[.,]\d+)?)(?:\s+.*)?$/i);
       if (reverseFormat) {
         const name = reverseFormat[1].trim();
         const sets = parseInt(reverseFormat[2], 10);
         const reps = parseInt(reverseFormat[3], 10);
         const weight = parseFloat(reverseFormat[4].replace(",", "."));
-        return { name, weight, sets, reps, setsData: Array.from({ length: sets }, () => ({ weight, reps })) };
+        return { name, setsData: Array.from({ length: sets }, () => ({ weight, reps, done: false })) };
       }
 
+      // Формат: Жим 80 4/6
       const multiRegex = /(\d+(?:[.,]\d+)?)\s+(\d+)\s*[\/xх*]\s*(\d+)/g;
       const blocks = [];
       let block;
@@ -545,23 +565,25 @@
         const name = text.slice(0, text.search(/(\d+(?:[.,]\d+)?)\s+(\d+)\s*[\/xх*]\s*(\d+)/)).trim();
         const setsData = [];
         for (const b of blocks) {
-          for (let i = 0; i < b.sets; i++) setsData.push({ weight: b.weight, reps: b.reps });
+          for (let i = 0; i < b.sets; i++) setsData.push({ weight: b.weight, reps: b.reps, done: false });
         }
         return { name: name || text, setsData };
       }
 
+      // Формат: Пресс 4*20
       const setsFirst = text.match(/^(.+?)\s+(\d+)\s*[\/xх*]\s*(\d+)(?:\s+(\d+(?:[.,]\d+)?))?$/);
       if (setsFirst) {
         const name = setsFirst[1].trim();
         const sets = parseInt(setsFirst[2], 10);
         const reps = parseInt(setsFirst[3], 10);
         const weight = setsFirst[4] ? parseFloat(setsFirst[4].replace(",", ".")) : 0;
-        return { name, setsData: Array.from({ length: sets }, () => ({ weight, reps })) };
+        return { name, setsData: Array.from({ length: sets }, () => ({ weight, reps, done: false })) };
       }
 
       return null;
     }
 
+    // ИМПОРТ ТРЕНИРОВКИ В БАЗУ
     function parseAndSavePlan() {
       const input = document.getElementById("planInput").value.trim();
       if (!input) return;
@@ -583,6 +605,21 @@
       saveData();
     }
 
+    // ПЕРЕКЛЮЧЕНИЕ ГАЛОЧКИ ПОДХОДА + АВТОЗАПУСК ТАЙМЕРА
+    function toggleSetDone(entryId, setIndex) {
+      const entry = data.entries.find(e => e.id === entryId);
+      if (!entry || !entry.setsData[setIndex]) return;
+
+      const isNowDone = !entry.setsData[setIndex].done;
+      entry.setsData[setIndex].done = isNowDone;
+      saveData();
+
+      if (isNowDone) {
+        resetTimer(90);
+        toggleTimer(); // автоматически стартует 90 сек отдыха
+      }
+    }
+
     function clearToday() {
       if (!confirm("Очистить записи за сегодня?")) return;
       const today = dateKey(new Date());
@@ -590,9 +627,45 @@
       saveData();
     }
 
-    // ==========================================
-    // ТАЙМЕР
-    // ==========================================
+
+    // СОХРАНЕНИЕ ЗАМЕРОВ
+    function initDatePicker() {
+      const today = dateKey(new Date());
+      document.getElementById("mDate").value = today;
+    }
+
+    function saveMeasurement() {
+      const chosenDate = document.getElementById("mDate").value || dateKey(new Date());
+      const weight = parseFloat(document.getElementById("mWeight").value) || 0;
+      const waist = parseFloat(document.getElementById("mWaist").value) || 0;
+      const chest = parseFloat(document.getElementById("mChest").value) || 0;
+      const thigh = parseFloat(document.getElementById("mThigh").value) || 0;
+      const arm = parseFloat(document.getElementById("mArm").value) || 0;
+
+      if (!weight && !waist && !chest && !thigh && !arm) {
+        alert("Заполните хотя бы одно поле!");
+        return;
+      }
+
+      const existingIdx = data.measurements.findIndex(m => dateKey(m.date) === chosenDate);
+      const record = {
+        id: Date.now().toString(36),
+        date: new Date(chosenDate + "T12:00:00").toISOString(),
+        weight, waist, chest, thigh, arm
+      };
+
+      if (existingIdx !== -1) {
+        data.measurements[existingIdx] = record;
+      } else {
+        data.measurements.push(record);
+      }
+
+      data.measurements.sort((a, b) => new Date(a.date) - new Date(b.date));
+      saveData();
+      alert("Замер сохранен!");
+    }
+
+    // ТАЙМЕР ОТДЫХА
     let timerInterval = null;
     let timerSec = 90;
 
@@ -636,9 +709,7 @@
       renderTimer();
     }
 
-    // ==========================================
     // ГРАФИКИ
-    // ==========================================
     let weightChartInstance = null;
     let exerciseChartInstance = null;
 
@@ -722,9 +793,7 @@
       });
     }
 
-    // ==========================================
-    // UI REFRESH
-    // ==========================================
+    // ОБНОВЛЕНИЕ ЭКРАНОВ
     function updateUI() {
       const today = dateKey(new Date());
       const uniqueDates = new Set(data.entries.map(e => dateKey(e.date)));
@@ -736,13 +805,21 @@
       document.getElementById("statLastWeight").innerText = lastM && lastM.weight ? lastM.weight : "—";
       document.getElementById("statLastWaist").innerText = lastM && lastM.waist ? lastM.waist : "—";
 
-      // Today workout
+      // Сегодняшняя сессия и подсчёт галочек
       const todayEntries = data.entries.filter(e => dateKey(e.date) === today);
       let vol = 0;
+      let totalSets = 0;
+      let doneSets = 0;
+
       todayEntries.forEach(e => {
-        (e.setsData || []).forEach(s => { vol += (Number(s.weight) || 0) * (Number(s.reps) || 0); });
+        (e.setsData || []).forEach(s => {
+          totalSets++;
+          if (s.done) doneSets++;
+          vol += (Number(s.weight) || 0) * (Number(s.reps) || 0);
+        });
       });
-      document.getElementById("sessionVolume").innerText = `${vol} кг`;
+
+      document.getElementById("sessionVolume").innerText = `${vol} кг (${doneSets}/${totalSets} подх.)`;
 
       const list = document.getElementById("todayList");
       if (!todayEntries.length) {
@@ -751,11 +828,23 @@
       } else {
         document.getElementById("clearDayBtnBox").style.display = "block";
         list.innerHTML = todayEntries.map((e, idx) => {
-          const setsStr = (e.setsData || []).map(s => `${s.weight}×${s.reps}`).join(" | ");
+          const sets = e.setsData || [];
+          const allDone = sets.length > 0 && sets.every(s => s.done);
+
+          const setsHtml = sets.map((s, sIdx) => `
+            <div class="set-row ${s.done ? 'done' : ''}">
+              <div class="set-info">Подход ${sIdx + 1}: ${s.weight} кг × ${s.reps}</div>
+              <button class="check-btn" onclick="toggleSetDone('${e.id}', ${sIdx})">✓</button>
+            </div>
+          `).join("");
+
           return `
-            <div style="background: var(--card-inner); border-radius: 8px; padding: 12px; margin-bottom: 8px; border-left: 3px solid var(--accent);">
-              <div style="font-weight: 700; font-size: 15px;">${idx + 1}. ${e.exercise}</div>
-              <div style="color: var(--muted); font-size: 13px; margin-top: 4px;">${setsStr}</div>
+            <div class="exercise-card ${allDone ? 'all-done' : ''}">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <div style="font-weight: 700; font-size: 16px;">${idx + 1}. ${e.exercise}</div>
+                <div style="font-size: 12px; color: var(--muted);">${allDone ? '✅ Выполнено' : `${sets.filter(s=>s.done).length}/${sets.length}`}</div>
+              </div>
+              <div class="sets-box">${setsHtml}</div>
             </div>
           `;
         }).join("");
@@ -775,6 +864,7 @@
       if (screenId === "analytics") setTimeout(renderExerciseChart, 40);
     }
 
+    // ЭКСПОРТ И ИМПОРТ JSON
     function exportDataJson() {
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
