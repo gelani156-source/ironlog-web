@@ -1,42 +1,42 @@
-const CACHE_NAME = "ironlog-cache-v1";
+const CACHE_NAME = "ironlog-v7-cache";
 const ASSETS = [
-  "./",
   "./index.html",
-  "./manifest.json",
   "https://cdn.jsdelivr.net/npm/chart.js"
 ];
 
-self.addEventListener("install", (e) => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+// Установка сервис-воркера и кэширование файлов
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(ASSETS);
+    })
   );
   self.skipWaiting();
 });
 
-self.addEventListener("activate", (e) => {
-  e.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys.map((k) => {
-          if (k !== CACHE_NAME) return caches.delete(k);
+// Активация и очистка старых кэшей
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys.map((key) => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
         })
-      )
-    )
+      );
+    })
   );
   self.clients.claim();
 });
 
-self.addEventListener("fetch", (e) => {
-  e.respondWith(
-    caches.match(e.request).then((res) => {
-      return (
-        res ||
-        fetch(e.request).catch(() => {
-          if (e.request.destination === "document") {
-            return caches.match("./index.html");
-          }
-        })
-      );
+// Перехват сетевых запросов (работа оффлайн)
+self.addEventListener("fetch", (event) => {
+  event.respondWith(
+    caches.match(event.request).then((cachedResponse) => {
+      return cachedResponse || fetch(event.request).catch(() => {
+        // Если нет сети и файла в кэше — можно вернуть заглушку
+      });
     })
   );
 });
