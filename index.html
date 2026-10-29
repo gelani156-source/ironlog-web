@@ -5,39 +5,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>IRONLOG 7.0 — Pro</title>
   
-  <!-- PWA & Theme -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#090A0F" id="metaThemeColor">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-  <!-- Chart.js для графиков -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
   <style>
-    /* Темы оформления: Тёмная (по умолчанию) и Светлая */
+    /* Четкие и контрастные темы */
     :root.dark {
       --bg: #090A0F;
-      --card-bg: #12141C;
-      --card-border: #222633;
+      --card-bg: #141721;
+      --card-border: #2A2F40;
       --text-main: #FFFFFF;
       --text-muted: #9BA1A6;
-      --text-dim: #5C626B;
+      --text-dim: #6E7681;
       --btn-bg: #FFFFFF;
       --btn-text: #090A0F;
-      --input-bg: #090A0F;
+      --input-bg: #0D0F15;
+      --input-border: #2A2F40;
     }
 
     :root.light {
-      --bg: #F4F5F7;
+      --bg: #ECEEF2;
       --card-bg: #FFFFFF;
-      --card-border: #E1E4E8;
-      --text-main: #1A1D20;
-      --text-muted: #656D76;
-      --text-dim: #8C959F;
-      --btn-bg: #1A1D20;
+      --card-border: #D0D5DD;
+      --text-main: #101828;
+      --text-muted: #475467;
+      --text-dim: #667085;
+      --btn-bg: #101828;
       --btn-text: #FFFFFF;
-      --input-bg: #F6F8FA;
+      --input-bg: #F9FAFB;
+      --input-border: #D0D5DD;
     }
 
     * {
@@ -51,15 +51,15 @@
     body {
       background-color: var(--bg);
       color: var(--text-main);
-      padding: env(safe-area-inset-top, 16px) 16px calc(env(safe-area-inset-bottom, 16px) + 70px) 16px;
+      padding: env(safe-area-inset-top, 16px) 16px calc(env(safe-area-inset-bottom, 16px) + 80px) 16px;
       min-height: 100vh;
       transition: background 0.2s, color 0.2s;
     }
 
     header {
-      padding: 12px 0 20px;
+      padding: 12px 0 16px;
       border-bottom: 1px solid var(--card-border);
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -72,7 +72,7 @@
     }
 
     .app-title {
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 800;
       letter-spacing: 0.5px;
     }
@@ -94,7 +94,7 @@
       font-size: 13px;
       font-weight: 700;
       padding: 4px 10px;
-      border-radius: 12px;
+      border-radius: 10px;
     }
 
     .card {
@@ -103,16 +103,17 @@
       border-radius: 16px;
       padding: 16px;
       margin-bottom: 16px;
-      transition: background 0.2s, border-color 0.2s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
 
     .card-title {
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 700;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      color: var(--text-main);
     }
 
     .card-subtitle {
@@ -135,32 +136,36 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      transition: opacity 0.2s;
     }
 
     .btn:active { opacity: 0.7; }
     
     .btn-secondary {
-      background: var(--card-border);
+      background: var(--card-bg);
       color: var(--text-main);
+      border: 1px solid var(--card-border);
     }
     
     .btn-danger {
-      background: rgba(255, 92, 92, 0.1);
-      color: #FF5C5C;
-      border: 1px solid rgba(255, 92, 92, 0.2);
+      background: rgba(239, 68, 68, 0.1);
+      color: #EF4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
     }
 
     textarea, input, select {
       width: 100%;
       background: var(--input-bg);
-      border: 1px solid var(--card-border);
+      border: 1px solid var(--input-border);
       border-radius: 10px;
       padding: 12px;
       color: var(--text-main);
       font-size: 15px;
       margin-bottom: 12px;
       outline: none;
+    }
+
+    textarea::placeholder, input::placeholder {
+      color: var(--text-dim);
     }
 
     textarea:focus, input:focus, select:focus { border-color: var(--text-main); }
@@ -171,7 +176,7 @@
       gap: 10px;
     }
 
-    /* Шаблоны (горизонтальный скролл) */
+    /* Шаблоны */
     .templates-scroll {
       display: flex;
       gap: 8px;
@@ -212,7 +217,7 @@
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       color: var(--text-main);
-      padding: 6px 12px;
+      padding: 6px 10px;
       border-radius: 8px;
       font-size: 12px;
       font-weight: 600;
@@ -226,14 +231,9 @@
       display: flex;
       align-items: flex-start;
       gap: 12px;
-      transition: opacity 0.2s;
     }
-    .exercise-item.completed {
-      opacity: 0.4;
-    }
-    .exercise-item.completed .ex-name {
-      text-decoration: line-through;
-    }
+    .exercise-item.completed { opacity: 0.4; }
+    .exercise-item.completed .ex-name { text-decoration: line-through; }
     .ex-checkbox {
       width: 20px;
       height: 20px;
@@ -278,7 +278,7 @@
 
     .chart-box {
       position: relative;
-      height: 300px;
+      height: 280px;
       width: 100%;
       margin-top: 10px;
     }
@@ -300,7 +300,6 @@
       <div class="card-title">Импорт тренировки</div>
       <div class="card-subtitle">Вставь план из заметок или выбери шаблон</div>
       
-      <!-- Шаблоны -->
       <div class="templates-scroll" id="templatesContainer"></div>
 
       <input type="text" id="workoutTitleInput" placeholder="Название (Грудь + Бицепс)" value="Тренировка">
@@ -308,7 +307,7 @@
       
       <div class="grid-2">
         <button class="btn" id="btnParseImport">Распознать</button>
-        <button class="btn btn-secondary" id="btnSaveTemplate">Сохранить шаблон</button>
+        <button class="btn btn-secondary" id="btnSaveTemplate">Сохранить</button>
       </div>
     </div>
 
@@ -319,19 +318,17 @@
       </div>
       <div class="card-subtitle" id="todayExerciseCount">Упражнений: 0</div>
       
-      <!-- Список сегодняшней тренировки -->
       <div id="todayList"></div>
 
-      <!-- Таймер отдыха -->
       <div class="timer-panel" id="timerPanel">
-        <div id="timerDisplay" style="font-size: 24px; font-weight: 800; letter-spacing: 1px;">02:00</div>
+        <div id="timerDisplay" style="font-size: 22px; font-weight: 800;">02:00</div>
         <div style="font-size: 12px; color: var(--text-muted);">Отдых между подходами</div>
         <div class="timer-btns">
           <button class="timer-chip" onclick="startRestTimer(120)">2 мин</button>
           <button class="timer-chip" onclick="startRestTimer(180)">3 мин</button>
           <button class="timer-chip" onclick="startRestTimer(240)">4 мин</button>
           <button class="timer-chip" onclick="startRestTimer(300)">5 мин</button>
-          <button class="timer-chip" onclick="stopRestTimer()" style="color: #FF5C5C;">Стоп</button>
+          <button class="timer-chip" onclick="stopRestTimer()" style="color: #EF4444;">Стоп</button>
         </div>
       </div>
 
@@ -406,7 +403,6 @@
   </nav>
 
   <script>
-    // --- Управление темой ---
     function setTheme(theme) {
       document.body.className = theme;
       localStorage.setItem("ironlog_theme", theme);
@@ -414,7 +410,7 @@
       const meta = document.getElementById("metaThemeColor");
       if (theme === "light") {
         btn.textContent = "🌙 Тьма";
-        meta.setAttribute("content", "#F4F5F7");
+        meta.setAttribute("content", "#ECEEF2");
       } else {
         btn.textContent = "☀️ Света";
         meta.setAttribute("content", "#090A0F");
@@ -424,11 +420,9 @@
       const current = document.body.className === "light" ? "dark" : "light";
       setTheme(current);
     }
-    // Инициализация темы при старте
     const savedTheme = localStorage.getItem("ironlog_theme") || "dark";
     setTheme(savedTheme);
 
-    // --- Хранилище данных ---
     const STORAGE_KEY = "ironlog_data_v7_pro";
     function defaultData() {
       return { version: "7.0", unit: "кг", entries: [], measurements: [], templates: [] };
@@ -457,15 +451,11 @@
     function entryBest1RM(e) { return Math.max(0, ...entrySets(e).map(s => oneRM(s.weight, s.reps))); }
     function getEntriesByDate(key) { return data.entries.filter(e => dateKey(e.date) === key).sort((a, b) => new Date(a.date) - new Date(b.date)); }
 
-    // --- Парсер с интерактивным запросом веса ---
     function parseSingleItem(rawContent) {
       let text = String(rawContent || "").trim().replace(/^\s*[-*•]\s*/, "").replace(/^\s*\d+[.)]\s*/, "").replace(/^\s*\[[ xX]?\]\s*/, "").replace(/[·]/g, " ").replace(/\bвидео\b/gi, " ").replace(/\s+/g, " ").trim();
       if (!text || text.length < 2) return null;
-      const original = text;
       text = text.replace(/\bкг\b/gi, "").replace(/\bkg\b/gi, "").replace(/\s+/g, " ").trim();
       if (/^(понедельник|вторник|среда|четверг|пятница|суббота|воскресенье)$/i.test(text)) return null;
-
-      const bodyweight = /подтягив|отжиман|пресс\b|планка|брусья|гиперэкстенз|лодочка/i.test(text);
 
       const multiRegex = /(\d+(?:[.,]\d+)?)\s+(\d+)\s*[\/xх*]\s*(\d+)/g;
       const blocks = [];
@@ -481,7 +471,7 @@
           for (let i = 0; i < b.sets; i++) setsData.push({ weight: b.weight, reps: b.reps, type: "working" });
         }
         const last = blocks[blocks.length - 1];
-        return { name: name || original, weight: last.weight, sets: setsData.length, reps: last.reps, setsData };
+        return { name: name || text, weight: last.weight, sets: setsData.length, reps: last.reps, setsData };
       }
 
       const setsFirst = text.match(/^(.+?)\s+(\d+)\s*[\/xх*]\s*(\d+)(?:\s+(\d+(?:[.,]\d+)?))?$/);
@@ -502,7 +492,6 @@
       for (const line of lines) {
         const parsed = parseSingleItem(line);
         if (parsed && parsed.name) {
-          // Если вес не указан и это не собственный вес — спрашиваем атлета (атлет всегда прав)
           if (parsed.weight === 0 && !parsed.setsData.length) {
             const promptW = prompt(`Укажи рабочий вес (кг) для: "${parsed.name}"\n(Оставь пустым, если вес не нужен)`);
             const w = promptW ? parseFloat(promptW.replace(",", ".")) || 0 : 0;
@@ -517,7 +506,6 @@
       return exercises;
     }
 
-    // --- Интерфейс тренировки и галочки ---
     function renderTodayUI() {
       const today = dateKey(new Date());
       const entries = getEntriesByDate(today);
@@ -535,7 +523,6 @@
         return;
       }
 
-      // Сортировка: невыполненные сверху, выполненные снизу
       const sortedEntries = [...entries].sort((a, b) => (a.isDone === b.isDone ? 0 : a.isDone ? 1 : -1));
 
       sortedEntries.forEach((e, idx) => {
@@ -570,7 +557,6 @@
       renderTemplatesUI();
     }
 
-    // Редактирование веса/повторов подхода прямо в процессе
     window.editSet = function(entryId, setIdx) {
       const entry = data.entries.find(e => e.id === entryId);
       if (!entry) return;
@@ -586,20 +572,15 @@
       renderTodayUI();
     };
 
-    // Переключение галочки выполнения (зачеркивание + уход вниз)
     window.toggleExerciseDone = function(entryId, isDone) {
       const entry = data.entries.find(e => e.id === entryId);
       if (!entry) return;
       entry.isDone = isDone;
       saveData(data);
       renderTodayUI();
-
-      if (isDone) {
-        startRestTimer(120); // Запуск таймера отдыха на 2 мин при выполнении
-      }
+      if (isDone) startRestTimer(120);
     };
 
-    // --- Таймер отдыха ---
     let timerInterval = null;
     function startRestTimer(seconds) {
       stopRestTimer();
@@ -632,7 +613,6 @@
       document.getElementById("timerPanel").classList.remove("active");
     };
 
-    // --- Шаблоны тренировок ---
     function renderTemplatesUI() {
       const container = document.getElementById("templatesContainer");
       container.innerHTML = "";
@@ -640,7 +620,7 @@
         container.innerHTML = `<span style="font-size:12px; color:var(--text-dim);">Нет сохраненных шаблонов</span>`;
         return;
       }
-      data.templates.forEach((t, idx) => {
+      data.templates.forEach((t) => {
         const chip = document.createElement("div");
         chip.className = "template-chip";
         chip.textContent = t.name;
@@ -655,8 +635,7 @@
     document.getElementById("btnSaveTemplate").addEventListener("click", () => {
       const name = document.getElementById("workoutTitleInput").value.trim();
       const text = document.getElementById("importTextInput").value.trim();
-      if (!name || !text) { alert("Заполни название и текст тренировки для шаблона"); return; }
-      
+      if (!name || !text) { alert("Заполни название и текст"); return; }
       data.templates.push({ id: makeId(), name, text });
       saveData(data);
       renderTemplatesUI();
@@ -693,14 +672,11 @@
       }
     });
 
-    // --- Замеры тела с автоподтяжкой роста ---
     function initMeasurementsForm() {
       if (data.measurements && data.measurements.length) {
         const sorted = [...data.measurements].sort((a, b) => new Date(b.date) - new Date(a.date));
         const last = sorted[0];
-        if (last && last.height) {
-          document.getElementById("mHeight").value = last.height;
-        }
+        if (last && last.height) document.getElementById("mHeight").value = last.height;
       }
     }
 
@@ -716,9 +692,9 @@
         type: "line",
         data: {
           labels: records.map(m => dateKey(m.date).slice(5)),
-          datasets: [{ label: `Вес (${data.unit})`, data: records.map(m => m.weight), borderColor: isLight ? "#1A1D20" : "#FFFFFF", backgroundColor: isLight ? "rgba(26,29,32,0.05)" : "rgba(255, 255, 255, 0.05)", borderWidth: 2, tension: 0.25, fill: true, pointRadius: 3 }]
+          datasets: [{ label: `Вес (${data.unit})`, data: records.map(m => m.weight), borderColor: isLight ? "#101828" : "#FFFFFF", backgroundColor: isLight ? "rgba(16,24,40,0.05)" : "rgba(255, 255, 255, 0.05)", borderWidth: 2, tension: 0.25, fill: true, pointRadius: 3 }]
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: isLight ? "#656D76" : "#9BA1A6" } } }, scales: { x: { ticks: { color: isLight ? "#8C959F" : "#5C626B" }, grid: { color: isLight ? "#E1E4E8" : "#222633" } }, y: { ticks: { color: isLight ? "#8C959F" : "#5C626B" }, grid: { color: isLight ? "#E1E4E8" : "#222633" } } } }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: isLight ? "#475467" : "#9BA1A6" } } }, scales: { x: { ticks: { color: isLight ? "#667085" : "#6E7681" }, grid: { color: isLight ? "#D0D5DD" : "#2A2F40" } }, y: { ticks: { color: isLight ? "#667085" : "#6E7681" }, grid: { color: isLight ? "#D0D5DD" : "#2A2F40" } } } }
       });
     }
 
@@ -735,7 +711,6 @@
       const today = dateKey(new Date());
       const existingIdx = data.measurements.findIndex(m => dateKey(m.date) === today);
       
-      // Если рост не заполнили в этот раз, берем из предыдущего замера
       let finalHeight = height;
       if (!finalHeight && data.measurements.length) {
         const sorted = [...data.measurements].sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -743,7 +718,6 @@
       }
 
       const record = { id: makeId(), date: new Date().toISOString(), weight, height: finalHeight, waist, chest, arm, thigh };
-
       if (existingIdx !== -1) data.measurements[existingIdx] = record; else data.measurements.push(record);
       data.measurements.sort((x, y) => new Date(x.date) - new Date(y.date));
       saveData(data);
@@ -753,7 +727,6 @@
       alert("Замер сохранен!");
     });
 
-    // --- Аналитика 1ПМ ---
     let strengthChartInstance = null;
     function initAnalyticsTab() {
       const select = document.getElementById("exerciseSelect");
@@ -776,17 +749,16 @@
         data: {
           labels: history.map(e => dateKey(e.date).slice(5)),
           datasets: [
-            { label: `Макс вес (${data.unit})`, data: history.map(e => entryBestWeight(e)), borderColor: isLight ? "#1A1D20" : "#FFFFFF", backgroundColor: isLight ? "rgba(26,29,32,0.05)" : "rgba(255, 255, 255, 0.05)", borderWidth: 2, tension: 0.3, pointRadius: 3 },
-            { label: `1ПМ (~${data.unit})`, data: history.map(e => Math.round(entryBest1RM(e))), borderColor: isLight ? "#656D76" : "#9BA1A6", borderDash: [4, 4], borderWidth: 1.5, tension: 0.3, pointRadius: 2 }
+            { label: `Макс вес (${data.unit})`, data: history.map(e => entryBestWeight(e)), borderColor: isLight ? "#101828" : "#FFFFFF", backgroundColor: isLight ? "rgba(16,24,40,0.05)" : "rgba(255, 255, 255, 0.05)", borderWidth: 2, tension: 0.3, pointRadius: 3 },
+            { label: `1ПМ (~${data.unit})`, data: history.map(e => Math.round(entryBest1RM(e))), borderColor: isLight ? "#475467" : "#9BA1A6", borderDash: [4, 4], borderWidth: 1.5, tension: 0.3, pointRadius: 2 }
           ]
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: isLight ? "#656D76" : "#9BA1A6" } } }, scales: { x: { ticks: { color: isLight ? "#8C959F" : "#5C626B" }, grid: { color: isLight ? "#E1E4E8" : "#222633" } }, y: { ticks: { color: isLight ? "#8C959F" : "#5C626B" }, grid: { color: isLight ? "#E1E4E8" : "#222633" } } } }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: isLight ? "#475467" : "#9BA1A6" } } }, scales: { x: { ticks: { color: isLight ? "#667085" : "#6E7681" }, grid: { color: isLight ? "#D0D5DD" : "#2A2F40" } }, y: { ticks: { color: isLight ? "#667085" : "#6E7681" }, grid: { color: isLight ? "#D0D5DD" : "#2A2F40" } } } }
       });
     }
 
     document.getElementById("exerciseSelect").addEventListener("change", (e) => renderStrengthChart(e.target.value));
 
-    // --- Бэкап JSON ---
     window.exportDataJSON = function() {
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: "json" });
       const url = URL.createObjectURL(blob);
@@ -807,18 +779,13 @@
             data = parsed;
             saveData(data);
             renderTodayUI();
-            alert("Данные успешно восстановлены из файла!");
-          } else {
-            alert("Неверный формат файла");
-          }
-        } catch (err) {
-          alert("Ошибка чтения файла");
-        }
+            alert("Данные успешно восстановлены!");
+          } else { alert("Неверный формат"); }
+        } catch (err) { alert("Ошибка чтения"); }
       };
       reader.readAsText(file);
     };
 
-    // --- Генератор карточки ---
     document.getElementById("btnGenCard").addEventListener("click", () => {
       const today = dateKey(new Date());
       const entries = getEntriesByDate(today);
@@ -834,7 +801,7 @@
       ctx.fillStyle = "#FFFFFF"; ctx.font = "bold 38px -apple-system, sans-serif"; ctx.fillText("IRONLOG", 50, 70);
       ctx.fillStyle = "#9BA1A6"; ctx.font = "20px -apple-system, sans-serif"; ctx.fillText(dateLabel(today).toUpperCase(), 50, 110);
 
-      ctx.strokeStyle = "#222633"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(50, 140); ctx.lineTo(750, 140); ctx.stroke();
+      ctx.strokeStyle = "#2A2F40"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(50, 140); ctx.lineTo(750, 140); ctx.stroke();
 
       let y = 190;
       for (let i = 0; i < Math.min(entries.length, 8); i++) {
@@ -842,20 +809,19 @@
         ctx.fillStyle = "#FFFFFF"; ctx.font = "bold 22px -apple-system, sans-serif"; ctx.fillText(`${i + 1}. ${e.exercise}`, 50, y);
         ctx.fillStyle = "#9BA1A6"; ctx.font = "600 20px -apple-system, sans-serif"; ctx.fillText(`${sets.length} подх. · макс ${bestW} ${data.unit}`, 450, y);
         y += 35;
-        ctx.fillStyle = "#5C626B"; ctx.font = "15px -apple-system, sans-serif"; ctx.fillText(sets.map(s => `${s.weight}×${s.reps}`).join("  |  "), 75, y);
+        ctx.fillStyle = "#6E7681"; ctx.font = "15px -apple-system, sans-serif"; ctx.fillText(sets.map(s => `${s.weight}×${s.reps}`).join("  |  "), 75, y);
         y += 45;
       }
 
       const totalVol = entries.reduce((s, e) => s + entryVolume(e), 0);
-      ctx.fillStyle = "#12141C"; ctx.fillRect(50, 840, 700, 100);
-      ctx.strokeStyle = "#222633"; ctx.strokeRect(50, 840, 700, 100);
+      ctx.fillStyle = "#141721"; ctx.fillRect(50, 840, 700, 100);
+      ctx.strokeStyle = "#2A2F40"; ctx.strokeRect(50, 840, 700, 100);
       ctx.fillStyle = "#9BA1A6"; ctx.font = "16px -apple-system, sans-serif"; ctx.fillText("СУММАРНЫЙ ТОННАЖ", 75, 875);
       ctx.fillStyle = "#FFFFFF"; ctx.font = "bold 32px -apple-system, sans-serif"; ctx.fillText(`${fmt(totalVol, 0)} ${data.unit}`, 75, 915);
 
       const link = document.createElement("a"); link.download = `ironlog-${today}.png`; link.href = canvas.toDataURL("image/png"); link.click();
     });
 
-    // --- Навигация ---
     window.switchTab = function(tabId, btn) {
       document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
       document.querySelectorAll(".nav-item").forEach(el => el.classList.remove("active"));
