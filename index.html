@@ -8,22 +8,21 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="IRONLOG">
-  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='100' fill='%230d0f12'/><path d='M120 256h272M160 180v152M352 180v152M200 200v112M312 200v112' stroke='%2322c55e' stroke-width='36' stroke-linecap='round'/></svg>">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='110' fill='%23000000'/><path d='M140 256h232M170 190v132M342 190v132M205 210v92M307 210v92' stroke='%2330d158' stroke-width='34' stroke-linecap='round'/></svg>">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     :root {
-      --bg: #090a0d;
-      --card: #12151c;
-      --card-inner: #191e28;
-      --border: #232a38;
-      --border-focus: #22c55e;
-      --accent: #22c55e;
-      --accent-dim: rgba(34, 197, 94, 0.15);
-      --text: #f9fafb;
-      --muted: #8b949e;
-      --danger: #ef4444;
-      --radius: 16px;
+      --bg: #000000;
+      --card: #1c1c1e;
+      --card-inner: #2c2c2e;
+      --border: #38383a;
+      --accent: #30d158;
+      --accent-dim: rgba(48, 209, 88, 0.15);
+      --text: #ffffff;
+      --text-sec: #8e8e93;
+      --danger: #ff453a;
+      --radius: 14px;
       --radius-sm: 10px;
     }
 
@@ -37,8 +36,8 @@
     body {
       background-color: var(--bg);
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
-      padding: calc(env(safe-area-inset-top, 20px) + 12px) 16px calc(env(safe-area-inset-bottom, 20px) + 85px) 16px;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", sans-serif;
+      padding: calc(env(safe-area-inset-top, 20px) + 8px) 16px calc(env(safe-area-inset-bottom, 20px) + 80px) 16px;
       user-select: none;
       -webkit-user-select: none;
       overflow-x: hidden;
@@ -48,105 +47,74 @@
     header {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
+      align-items: flex-end;
+      padding: 8px 4px 16px;
     }
-    .brand-title {
-      font-size: 24px;
+    .header-date {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-sec);
+      text-transform: uppercase;
+      letter-spacing: -0.2px;
+    }
+    .header-title {
+      font-size: 32px;
       font-weight: 800;
-      letter-spacing: 0.5px;
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+    }
+    .header-badge {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
       color: var(--accent);
     }
-    .brand-sub {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 1px;
-      color: var(--muted);
-      text-transform: uppercase;
-      margin-top: 2px;
-    }
-    .icon-btn {
-      width: 40px;
-      height: 40px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--muted);
-      font-size: 18px;
-      cursor: pointer;
-    }
 
-    /* КАРТОЧКИ И ПАНЕЛИ */
-    .section-title {
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
+    /* МИНИМАЛИСТИЧНЫЕ КАРТОЧКИ */
     .card {
       background: var(--card);
-      border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 16px;
       margin-bottom: 14px;
     }
-    .card-label {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--accent);
-      margin-bottom: 6px;
-    }
-    .stat-hero {
-      font-size: 28px;
-      font-weight: 800;
-      margin-bottom: 4px;
-    }
-    .stat-desc {
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 14px;
+    .card-title {
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -0.4px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     /* СЕТКА СТАТИСТИКИ */
-    .stat-grid {
+    .stat-row {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 8px;
     }
-    .stat-box {
+    .stat-pill {
       background: var(--card-inner);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
       padding: 12px 6px;
+      border-radius: var(--radius-sm);
       text-align: center;
     }
-    .stat-box-val {
-      font-size: 17px;
+    .stat-pill-val {
+      font-size: 18px;
       font-weight: 700;
-      color: var(--text);
+      font-variant-numeric: tabular-nums;
     }
-    .stat-box-lbl {
+    .stat-pill-lbl {
       font-size: 11px;
-      color: var(--muted);
-      margin-top: 4px;
+      color: var(--text-sec);
+      margin-top: 2px;
     }
 
-    /* ПОЛЯ ВВОДА */
-    .form-group {
-      margin-bottom: 12px;
-    }
-    .field-label {
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--muted);
-      margin-bottom: 6px;
-      display: block;
-    }
-    .input-row {
+    /* ПОЛЯ ВВОДА В СТИЛЕ IOS */
+    .input-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
@@ -155,166 +123,164 @@
     input, textarea, select {
       width: 100%;
       background: var(--card-inner);
-      border: 1px solid var(--border);
+      border: none;
       color: var(--text);
       border-radius: var(--radius-sm);
       padding: 12px 14px;
-      font-size: 15px;
+      font-size: 16px;
       font-family: inherit;
       outline: none;
-      transition: border-color 0.2s;
-    }
-    input:focus, textarea:focus, select:focus {
-      border-color: var(--border-focus);
     }
     input[type="date"] {
-      -webkit-appearance: none;
-      min-height: 46px;
+      min-height: 44px;
       color: var(--text);
+      -webkit-appearance: none;
+    }
+    input::placeholder, textarea::placeholder {
+      color: var(--text-sec);
     }
 
     /* КНОПКИ */
     .btn {
       width: 100%;
       background: var(--accent);
-      color: #000;
+      color: #000000;
       border: none;
       border-radius: var(--radius-sm);
       padding: 14px;
-      font-size: 15px;
-      font-weight: 700;
+      font-size: 16px;
+      font-weight: 600;
       cursor: pointer;
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 8px;
-      transition: transform 0.1s, opacity 0.2s;
+      gap: 6px;
+      transition: opacity 0.15s;
     }
     .btn:active {
-      transform: scale(0.98);
-      opacity: 0.9;
+      opacity: 0.7;
     }
     .btn-secondary {
       background: var(--card-inner);
       color: var(--text);
-      border: 1px solid var(--border);
     }
     .btn-danger {
-      background: rgba(239, 68, 68, 0.12);
+      background: rgba(255, 69, 58, 0.15);
       color: var(--danger);
-      border: 1px solid rgba(239, 68, 68, 0.25);
     }
 
-    /* КАРТОЧКИ УПРАЖНЕНИЙ И ЧЕКБОКСЫ */
-    .exercise-card {
+    /* УПРАЖНЕНИЯ И СИСТЕМНЫЕ КРУГЛЫЕ ЧЕКБОКСЫ */
+    .ex-box {
       background: var(--card-inner);
-      border: 1px solid var(--border);
       border-radius: var(--radius-sm);
       padding: 14px;
-      margin-bottom: 12px;
-      border-left: 4px solid var(--accent);
+      margin-bottom: 10px;
     }
-    .exercise-card.all-done {
-      border-left-color: #3b82f6;
-      opacity: 0.75;
+    .ex-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .ex-name {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+    .ex-progress {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-sec);
     }
     .set-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 9px 12px;
-      margin-top: 6px;
-      background: rgba(255, 255, 255, 0.03);
-      border-radius: 8px;
-      border: 1px solid transparent;
+      padding: 10px 0;
+      border-top: 0.5px solid rgba(255, 255, 255, 0.08);
     }
-    .set-row.done {
-      background: rgba(34, 197, 94, 0.12);
-      border-color: rgba(34, 197, 94, 0.3);
+    .set-text {
+      font-size: 15px;
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
     }
-    .set-info {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text);
-    }
-    .set-row.done .set-info {
+    .set-row.done .set-text {
+      color: var(--text-sec);
       text-decoration: line-through;
-      color: var(--muted);
     }
-    .check-btn {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: var(--card);
-      color: transparent;
+    .ios-check {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: transparent;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
       cursor: pointer;
+      transition: all 0.15s;
     }
-    .set-row.done .check-btn {
+    .set-row.done .ios-check {
       background: var(--accent);
       border-color: var(--accent);
-      color: #000;
-      font-weight: bold;
+    }
+    .ios-check::after {
+      content: "✓";
+      color: #000000;
+      font-size: 14px;
+      font-weight: 900;
+      display: none;
+    }
+    .set-row.done .ios-check::after {
+      display: block;
     }
 
-    /* НИЖНЕЕ МЕНЮ */
-    nav.bottom-nav {
+    /* НАВИГАЦИЯ В СТИЛЕ IOS ТАБ-БАРА */
+    nav.tab-bar {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      height: calc(56px + env(safe-area-inset-bottom, 0px));
-      background: rgba(9, 10, 13, 0.94);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-top: 1px solid var(--border);
+      height: calc(50px + env(safe-area-inset-bottom, 0px));
+      background: rgba(28, 28, 30, 0.88);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border-top: 0.5px solid rgba(255, 255, 255, 0.15);
       display: flex;
       justify-content: space-around;
       padding-top: 4px;
-      z-index: 999;
+      z-index: 1000;
     }
-    .nav-tab {
+    .tab-item {
       background: none;
       border: none;
-      color: var(--muted);
+      color: var(--text-sec);
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      gap: 4px;
+      gap: 3px;
       font-size: 10px;
-      font-weight: 600;
+      font-weight: 500;
       width: 25%;
-      border-radius: 12px;
-      padding: 4px 0;
     }
-    .nav-tab.active {
+    .tab-item.active {
       color: var(--accent);
     }
-    .nav-icon {
-      font-size: 19px;
+    .tab-icon {
+      font-size: 20px;
     }
 
     .screen { display: none; }
-    .screen.active { display: block; animation: fadeIn 0.15s ease-in; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-    .chart-container {
-      position: relative;
-      height: 220px;
-      width: 100%;
-    }
-    .timer-val {
-      font-size: 52px;
+    .screen.active { display: block; }
+    .chart-container { position: relative; height: 210px; width: 100%; }
+    .timer-digital {
+      font-size: 64px;
       font-weight: 800;
+      letter-spacing: -1px;
       color: var(--accent);
       text-align: center;
       font-variant-numeric: tabular-nums;
-      margin: 16px 0;
+      margin: 20px 0;
     }
   </style>
 </head>
@@ -324,124 +290,108 @@
 
   <header>
     <div>
-      <div class="brand-title">IRONLOG</div>
-      <div class="brand-sub">TRAINING SYSTEM · 2.0 WEB</div>
+      <div class="header-date" id="topDateStr">Четверг, 29 октября</div>
+      <div class="header-title">IRONLOG</div>
     </div>
-    <div class="icon-btn" onclick="switchTab('analytics', document.querySelectorAll('.nav-tab')[3])">⚙️</div>
+    <div class="header-badge" id="topWeightBadge">82.0 кг</div>
   </header>
 
-  <!-- ЭКРАН 1: ПРОГРЕСС И ЗАМЕРЫ -->
-  <section id="screen-progress" class="screen active">
+  <!-- ЭКРАН 1: СЕГОДНЯ (ОТОБРАЖАЕТСЯ ТОЛЬКО ПОСЛЕ ЗАГРУЗКИ) -->
+  <section id="screen-today" class="screen active">
+    
+    <!-- КАРТОЧКА ИМПОРТА (ПОКАЗЫВАЕТСЯ ВСЕГДА ДЛЯ ВВОДА ПЛАНА) -->
     <div class="card">
-      <div class="card-label">Твоя статистика</div>
-      <div class="stat-hero" id="totalWorkoutsCount">0 тренировок</div>
-      <div class="stat-desc">Записывай замеры, чтобы следить за изменениями.</div>
+      <div class="card-title">
+        <span>Добавить тренировку</span>
+      </div>
+      <textarea id="planInput" rows="3" placeholder="Вставьте текст: Жим 105 1/6, Присед 115 5/5..."></textarea>
+      <button class="btn" style="margin-top: 10px;" onclick="parseAndSavePlan()">Записать на сегодня</button>
+    </div>
+
+    <!-- ТРЕНИРОВКА ТЕКУЩЕГО ДНЯ -->
+    <div class="card">
+      <div class="card-title">
+        <span>План на сегодня</span>
+        <span id="sessionVolume" style="font-size: 13px; color: var(--accent);">0 кг</span>
+      </div>
       
-      <div class="stat-grid">
-        <div class="stat-box">
-          <div class="stat-box-val" id="statMeasurementsCount">0</div>
-          <div class="stat-box-lbl">замеров</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-box-val" id="statLastWeight">—</div>
-          <div class="stat-box-lbl">вес, кг</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-box-val" id="statLastWaist">—</div>
-          <div class="stat-box-lbl">талия, см</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ВВОД НОВОГО ЗАМЕРА -->
-    <div class="card">
-      <div class="section-title">Добавить замер</div>
-      
-      <div class="form-group">
-        <label class="field-label">Дата замера</label>
-        <input type="date" id="mDate">
-      </div>
-
-      <div class="input-row">
-        <div>
-          <label class="field-label">Вес, кг</label>
-          <input type="number" step="0.1" id="mWeight" placeholder="82.0">
-        </div>
-        <div>
-          <label class="field-label">Талия, см</label>
-          <input type="number" step="0.5" id="mWaist" placeholder="82">
-        </div>
-      </div>
-
-      <div class="input-row">
-        <div>
-          <label class="field-label">Грудь, см</label>
-          <input type="number" step="0.5" id="mChest" placeholder="100">
-        </div>
-        <div>
-          <label class="field-label">Бёдра, см</label>
-          <input type="number" step="0.5" id="mThigh" placeholder="96">
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label class="field-label">Бицепс, см</label>
-        <input type="number" step="0.5" id="mArm" placeholder="38">
-      </div>
-
-      <button class="btn" onclick="saveMeasurement()">Сохранить замер</button>
-    </div>
-
-    <div class="card">
-      <div class="section-title">Динамика веса тела</div>
-      <div class="chart-container">
-        <canvas id="chartWeight"></canvas>
-      </div>
-    </div>
-  </section>
-
-  <!-- ЭКРАН 2: СЕГОДНЯ / ЖУРНАЛ С ГАЛОЧКАМИ -->
-  <section id="screen-today" class="screen">
-    <div class="card">
-      <div class="card-label">Импорт тренировки из заметок</div>
-      <textarea id="planInput" rows="3" placeholder="Вставьте текст (например: Жим 105 1/6, Присед 115 5/5)..."></textarea>
-      <button class="btn" style="margin-top: 10px;" onclick="parseAndSavePlan()">Распознать и записать</button>
-    </div>
-
-    <div class="card">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-        <div class="section-title" style="margin: 0;">Тренировка сегодня</div>
-        <span id="sessionVolume" style="color: var(--accent); font-weight: 700; font-size: 13px;">0 кг</span>
-      </div>
       <div id="todayList">
-        <p style="color: var(--muted); font-size: 14px;">Сегодня тренировок пока нет.</p>
+        <!-- Сюда динамически рендерится список упражнений с чекбоксами -->
       </div>
+
       <div id="clearDayBtnBox" style="display: none; margin-top: 14px;">
-        <button class="btn btn-danger" onclick="clearToday()">Очистить сегодняшнюю сессию</button>
+        <button class="btn btn-danger" onclick="clearToday()">Очистить план на сегодня</button>
       </div>
     </div>
   </section>
 
-  <!-- ЭКРАН 3: ТАЙМЕР ОТДЫХА -->
+  <!-- ЭКРАН 2: ТАЙМЕР ОТДЫХА -->
   <section id="screen-timer" class="screen">
-    <div class="card" style="text-align: center; padding: 26px 16px;">
-      <div class="card-label">Отдых между подходами</div>
-      <div class="timer-val" id="timerCount">01:30</div>
-      <div class="input-row">
+    <div class="card" style="text-align: center; padding: 24px 16px;">
+      <div class="card-title" style="justify-content: center;">Отдых между подходами</div>
+      <div class="timer-digital" id="timerCount">01:30</div>
+      <div class="input-grid">
         <button class="btn" id="timerStartBtn" onclick="toggleTimer()">Старт</button>
         <button class="btn btn-secondary" onclick="resetTimer(90)">90 сек</button>
       </div>
-      <div class="input-row" style="margin-top: 8px;">
+      <div class="input-grid" style="margin-top: 8px;">
         <button class="btn btn-secondary" onclick="addTimerSeconds(30)">+30 сек</button>
         <button class="btn btn-secondary" onclick="resetTimer(120)">120 сек</button>
       </div>
     </div>
   </section>
 
-  <!-- ЭКРАН 4: ГРАФИКИ И БЭКАП -->
+  <!-- ЭКРАН 3: ЗАМЕРЫ И АНТРОПОМЕТРИЯ -->
+  <section id="screen-measurements" class="screen">
+    <div class="card">
+      <div class="card-title">Внести замер</div>
+      <div style="margin-bottom: 10px;">
+        <input type="date" id="mDate">
+      </div>
+      <div class="input-grid">
+        <input type="number" step="0.1" id="mWeight" placeholder="Вес тела (кг)">
+        <input type="number" step="0.5" id="mWaist" placeholder="Талия (см)">
+      </div>
+      <div class="input-grid">
+        <input type="number" step="0.5" id="mChest" placeholder="Грудная клетка (см)">
+        <input type="number" step="0.5" id="mThigh" placeholder="Бедро (см)">
+      </div>
+      <div style="margin-bottom: 10px;">
+        <input type="number" step="0.5" id="mArm" placeholder="Обхват плеча / бицепс (см)">
+      </div>
+      <button class="btn" onclick="saveMeasurement()">Сохранить параметры</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Динамика веса тела</div>
+      <div class="chart-container">
+        <canvas id="chartWeight"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- ЭКРАН 4: СТАТИСТИКА И БЭКАП -->
   <section id="screen-analytics" class="screen">
     <div class="card">
-      <div class="section-title">График упражнения (1ПМ)</div>
+      <div class="card-title">Общая сводка</div>
+      <div class="stat-row">
+        <div class="stat-pill">
+          <div class="stat-pill-val" id="totalSessionsCount">0</div>
+          <div class="stat-pill-lbl">сессий</div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-pill-val" id="totalExercisesCount">0</div>
+          <div class="stat-pill-lbl">упражнений</div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-pill-val" id="totalMeasurementsCount">0</div>
+          <div class="stat-pill-lbl">замеров</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Прогресс упражнения</div>
       <select id="exerciseSelect" onchange="renderExerciseChart()" style="margin-bottom: 12px;"></select>
       <div class="chart-container">
         <canvas id="chartExercise"></canvas>
@@ -449,35 +399,34 @@
     </div>
 
     <div class="card">
-      <div class="section-title">Резервная копия данных</div>
-      <p style="color: var(--muted); font-size: 13px; margin-bottom: 12px;">Сохраните файл бэкапа в iCloud, чтобы данные никогда не потерялись.</p>
-      <div class="input-row">
-        <button class="btn btn-secondary" onclick="exportDataJson()">Скачать JSON</button>
-        <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">Загрузить</button>
+      <div class="card-title">Резервная копия</div>
+      <p style="color: var(--text-sec); font-size: 13px; margin-bottom: 12px;">Сохраните JSON-файл в приложение «Файлы» (iCloud Drive).</p>
+      <div class="input-grid">
+        <button class="btn btn-secondary" onclick="exportDataJson()">Экспорт JSON</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">Импорт JSON</button>
       </div>
       <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importDataJson(event)">
     </div>
   </section>
 
-  <!-- НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ -->
-  <nav class="bottom-nav">
-    <button class="nav-tab active" onclick="switchTab('progress', this)">
-      <span class="nav-icon">📈</span>Прогресс
+  <!-- НАВИГАЦИОННАЯ ПАНЕЛЬ -->
+  <nav class="tab-bar">
+    <button class="tab-item active" onclick="switchTab('today', this)">
+      <span class="tab-icon">🏋️</span>Сегодня
     </button>
-    <button class="nav-tab" onclick="switchTab('today', this)">
-      <span class="nav-icon">🏋️</span>Сегодня
+    <button class="tab-item" onclick="switchTab('timer', this)">
+      <span class="tab-icon">⏱</span>Таймер
     </button>
-    <button class="nav-tab" onclick="switchTab('timer', this)">
-      <span class="nav-icon">⏱</span>Таймер
+    <button class="tab-item" onclick="switchTab('measurements', this)">
+      <span class="tab-icon">⚖️</span>Замеры
     </button>
-    <button class="nav-tab" onclick="switchTab('analytics', this)">
-      <span class="nav-icon">📊</span>Анализ
+    <button class="tab-item" onclick="switchTab('analytics', this)">
+      <span class="tab-icon">📊</span>Анализ
     </button>
   </nav>
 
 
   <script>
-    // ХРАНИЛИЩЕ В ПАМЯТИ ТЕЛЕФОНА
     const STORAGE_KEY = "ironlog_db_v1";
 
     function defaultData() {
@@ -508,23 +457,7 @@
       ].join("-");
     }
 
-    // СКЛОНЕНИЯ СЛОВ НА РУССКОМ
-    function pluralWorkouts(count) {
-      const c = Math.abs(count) % 100;
-      const n1 = c % 10;
-      if (c > 10 && c < 20) return `${count} тренировок`;
-      if (n1 > 1 && n1 < 5) return `${count} тренировки`;
-      if (n1 === 1) return `${count} тренировка`;
-      return `${count} тренировок`;
-    }
-
-    function oneRM(w, r) {
-      w = Number(w) || 0; r = Number(r) || 0;
-      if (w <= 0 || r <= 0) return 0;
-      return r === 1 ? w : w * (1 + r / 30);
-    }
-
-    // ПАРСЕР ТЕКСТА ТРЕНИРОВОК
+    // ПАРСЕР ТЕКСТА
     function parseSingleItem(rawContent) {
       let text = String(rawContent || "").trim()
         .replace(/^\s*[-*•]\s*/, "")
@@ -583,18 +516,19 @@
       return null;
     }
 
-    // ИМПОРТ ТРЕНИРОВКИ В БАЗУ
+    // ИМПОРТ ПЛАНА СТРОГО НА ТЕКУЩУЮ ДАТУ
     function parseAndSavePlan() {
       const input = document.getElementById("planInput").value.trim();
       if (!input) return;
       const lines = input.split(/\r?\n|;/).map(l => l.trim()).filter(Boolean);
+      const todayIso = new Date().toISOString();
 
       for (const line of lines) {
         const item = parseSingleItem(line);
         if (item && item.name) {
           data.entries.push({
             id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-            date: new Date().toISOString(),
+            date: todayIso, // Привязываем строго к моменту добавления
             exercise: item.name,
             setsData: item.setsData
           });
@@ -605,67 +539,31 @@
       saveData();
     }
 
-    // ПЕРЕКЛЮЧЕНИЕ ГАЛОЧКИ ПОДХОДА + АВТОЗАПУСК ТАЙМЕРА
+    // НАЖАТИЕ НА КРУГЛЫЙ ЧЕКБОКС + АВТОСТАРТ ТАЙМЕРА
     function toggleSetDone(entryId, setIndex) {
       const entry = data.entries.find(e => e.id === entryId);
       if (!entry || !entry.setsData[setIndex]) return;
 
-      const isNowDone = !entry.setsData[setIndex].done;
-      entry.setsData[setIndex].done = isNowDone;
+      const isDone = !entry.setsData[setIndex].done;
+      entry.setsData[setIndex].done = isDone;
       saveData();
 
-      if (isNowDone) {
+      // Автоматический запуск отдыха при завершении подхода
+      if (isDone) {
         resetTimer(90);
-        toggleTimer(); // автоматически стартует 90 сек отдыха
+        toggleTimer();
       }
     }
 
     function clearToday() {
-      if (!confirm("Очистить записи за сегодня?")) return;
+      if (!confirm("Удалить план и подходы за сегодняшний день?")) return;
       const today = dateKey(new Date());
       data.entries = data.entries.filter(e => dateKey(e.date) !== today);
       saveData();
     }
 
 
-    // СОХРАНЕНИЕ ЗАМЕРОВ
-    function initDatePicker() {
-      const today = dateKey(new Date());
-      document.getElementById("mDate").value = today;
-    }
-
-    function saveMeasurement() {
-      const chosenDate = document.getElementById("mDate").value || dateKey(new Date());
-      const weight = parseFloat(document.getElementById("mWeight").value) || 0;
-      const waist = parseFloat(document.getElementById("mWaist").value) || 0;
-      const chest = parseFloat(document.getElementById("mChest").value) || 0;
-      const thigh = parseFloat(document.getElementById("mThigh").value) || 0;
-      const arm = parseFloat(document.getElementById("mArm").value) || 0;
-
-      if (!weight && !waist && !chest && !thigh && !arm) {
-        alert("Заполните хотя бы одно поле!");
-        return;
-      }
-
-      const existingIdx = data.measurements.findIndex(m => dateKey(m.date) === chosenDate);
-      const record = {
-        id: Date.now().toString(36),
-        date: new Date(chosenDate + "T12:00:00").toISOString(),
-        weight, waist, chest, thigh, arm
-      };
-
-      if (existingIdx !== -1) {
-        data.measurements[existingIdx] = record;
-      } else {
-        data.measurements.push(record);
-      }
-
-      data.measurements.sort((a, b) => new Date(a.date) - new Date(b.date));
-      saveData();
-      alert("Замер сохранен!");
-    }
-
-    // ТАЙМЕР ОТДЫХА
+    // МОДУЛЬ ТАЙМЕРА
     let timerInterval = null;
     let timerSec = 90;
 
@@ -691,22 +589,58 @@
             clearInterval(timerInterval);
             timerInterval = null;
             btn.innerText = "Старт";
-            alert("Время отдыха завершено! 💪");
+            if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+            alert("Время отдыха вышло! Пора на подход 💪");
           }
         }, 1000);
       }
     }
 
-    function resetTimer(s) {
-      if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-      timerSec = s;
+    function resetTimer(sec) {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      timerSec = sec;
       document.getElementById("timerStartBtn").innerText = "Старт";
       renderTimer();
     }
 
-    function addTimerSeconds(s) {
-      timerSec += s;
+    function addTimerSeconds(sec) {
+      timerSec += sec;
       renderTimer();
+    }
+
+    // МОДУЛЬ ЗАМЕРОВ
+    function saveMeasurement() {
+      const chosenDate = document.getElementById("mDate").value || dateKey(new Date());
+      const weight = parseFloat(document.getElementById("mWeight").value) || 0;
+      const waist = parseFloat(document.getElementById("mWaist").value) || 0;
+      const chest = parseFloat(document.getElementById("mChest").value) || 0;
+      const thigh = parseFloat(document.getElementById("mThigh").value) || 0;
+      const arm = parseFloat(document.getElementById("mArm").value) || 0;
+
+      if (!weight && !waist && !chest && !thigh && !arm) {
+        alert("Заполните хотя бы один параметр");
+        return;
+      }
+
+      const existingIdx = data.measurements.findIndex(m => dateKey(m.date) === chosenDate);
+      const record = {
+        id: Date.now().toString(36),
+        date: new Date(chosenDate + "T12:00:00").toISOString(),
+        weight, waist, chest, thigh, arm
+      };
+
+      if (existingIdx !== -1) {
+        data.measurements[existingIdx] = record;
+      } else {
+        data.measurements.push(record);
+      }
+
+      data.measurements.sort((a, b) => new Date(a.date) - new Date(b.date));
+      saveData();
+      alert("Параметры зафиксированы!");
     }
 
     // ГРАФИКИ
@@ -726,13 +660,13 @@
           labels,
           datasets: [{
             data: weights,
-            borderColor: "#22c55e",
-            backgroundColor: "rgba(34, 197, 94, 0.12)",
+            borderColor: "#30d158",
+            backgroundColor: "rgba(48, 209, 88, 0.12)",
             borderWidth: 2.5,
             tension: 0.3,
             fill: true,
             pointRadius: 4,
-            pointBackgroundColor: "#22c55e"
+            pointBackgroundColor: "#30d158"
           }]
         },
         options: {
@@ -740,8 +674,8 @@
           maintainAspectRatio: false,
           plugins: { legend: { display: false } },
           scales: {
-            x: { ticks: { color: "#8b949e", font: { size: 10 } }, grid: { color: "#191e28" } },
-            y: { ticks: { color: "#8b949e", font: { size: 10 } }, grid: { color: "#191e28" } }
+            x: { ticks: { color: "#8e8e93", font: { size: 10 } }, grid: { color: "#2c2c2e" } },
+            y: { ticks: { color: "#8e8e93", font: { size: 10 } }, grid: { color: "#2c2c2e" } }
           }
         }
       });
@@ -774,8 +708,8 @@
           datasets: [{
             label: "Макс вес (кг)",
             data: maxWeights,
-            borderColor: "#22c55e",
-            backgroundColor: "rgba(34, 197, 94, 0.15)",
+            borderColor: "#30d158",
+            backgroundColor: "rgba(48, 209, 88, 0.15)",
             borderWidth: 2,
             tension: 0.25,
             fill: true
@@ -784,28 +718,35 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { legend: { labels: { color: "#8b949e" } } },
+          plugins: { legend: { labels: { color: "#8e8e93" } } },
           scales: {
-            x: { ticks: { color: "#8b949e" }, grid: { color: "#191e28" } },
-            y: { ticks: { color: "#8b949e" }, grid: { color: "#191e28" } }
+            x: { ticks: { color: "#8e8e93" }, grid: { color: "#2c2c2e" } },
+            y: { ticks: { color: "#8e8e93" }, grid: { color: "#2c2c2e" } }
           }
         }
       });
     }
 
-    // ОБНОВЛЕНИЕ ЭКРАНОВ
+    // ОБНОВЛЕНИЕ ЭКРАНОВ С ПРОВЕРКОЙ ТЕКУЩЕЙ ДАТЫ
     function updateUI() {
       const today = dateKey(new Date());
-      const uniqueDates = new Set(data.entries.map(e => dateKey(e.date)));
-      
-      document.getElementById("totalWorkoutsCount").innerText = pluralWorkouts(uniqueDates.size);
-      document.getElementById("statMeasurementsCount").innerText = data.measurements.length;
 
+      // Дата в шапке
+      const now = new Date();
+      const dateOptions = { weekday: 'long', day: 'numeric', month: 'long' };
+      document.getElementById("topDateStr").innerText = now.toLocaleDateString('ru-RU', dateOptions);
+
+      // Последний замер веса
       const lastM = data.measurements[data.measurements.length - 1];
-      document.getElementById("statLastWeight").innerText = lastM && lastM.weight ? lastM.weight : "—";
-      document.getElementById("statLastWaist").innerText = lastM && lastM.waist ? lastM.waist : "—";
+      document.getElementById("topWeightBadge").innerText = lastM && lastM.weight ? `${lastM.weight} кг` : "— кг";
 
-      // Сегодняшняя сессия и подсчёт галочек
+      // Сводка
+      const uniqueDays = new Set(data.entries.map(e => dateKey(e.date)));
+      document.getElementById("totalSessionsCount").innerText = uniqueDays.size;
+      document.getElementById("totalExercisesCount").innerText = data.entries.length;
+      document.getElementById("totalMeasurementsCount").innerText = data.measurements.length;
+
+      // ТРЕНИРОВКА ТОЛЬКО НА СЕГОДНЯ: фильтруем строго по dateKey(e.date) === today
       const todayEntries = data.entries.filter(e => dateKey(e.date) === today);
       let vol = 0;
       let totalSets = 0;
@@ -819,11 +760,11 @@
         });
       });
 
-      document.getElementById("sessionVolume").innerText = `${vol} кг (${doneSets}/${totalSets} подх.)`;
+      document.getElementById("sessionVolume").innerText = `${vol} кг · ${doneSets}/${totalSets}`;
 
       const list = document.getElementById("todayList");
       if (!todayEntries.length) {
-        list.innerHTML = `<p style="color: var(--muted); font-size: 14px;">Сегодня тренировок пока нет.</p>`;
+        list.innerHTML = `<p style="color: var(--text-sec); font-size: 14px; text-align: center; padding: 16px 0;">На сегодня тренировка ещё не добавлена.<br>Вставьте текст выше, чтобы начать.</p>`;
         document.getElementById("clearDayBtnBox").style.display = "none";
       } else {
         document.getElementById("clearDayBtnBox").style.display = "block";
@@ -833,18 +774,18 @@
 
           const setsHtml = sets.map((s, sIdx) => `
             <div class="set-row ${s.done ? 'done' : ''}">
-              <div class="set-info">Подход ${sIdx + 1}: ${s.weight} кг × ${s.reps}</div>
-              <button class="check-btn" onclick="toggleSetDone('${e.id}', ${sIdx})">✓</button>
+              <div class="set-text">${sIdx + 1} подход: ${s.weight} кг × ${s.reps}</div>
+              <button class="ios-check" onclick="toggleSetDone('${e.id}', ${sIdx})"></button>
             </div>
           `).join("");
 
           return `
-            <div class="exercise-card ${allDone ? 'all-done' : ''}">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <div style="font-weight: 700; font-size: 16px;">${idx + 1}. ${e.exercise}</div>
-                <div style="font-size: 12px; color: var(--muted);">${allDone ? '✅ Выполнено' : `${sets.filter(s=>s.done).length}/${sets.length}`}</div>
+            <div class="ex-box">
+              <div class="ex-header">
+                <div class="ex-name">${idx + 1}. ${e.exercise}</div>
+                <div class="ex-progress">${allDone ? '✅ Сделано' : `${sets.filter(s=>s.done).length}/${sets.length}`}</div>
               </div>
-              <div class="sets-box">${setsHtml}</div>
+              <div>${setsHtml}</div>
             </div>
           `;
         }).join("");
@@ -856,15 +797,15 @@
 
     function switchTab(screenId, btn) {
       document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-      document.querySelectorAll(".nav-tab").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".tab-item").forEach(b => b.classList.remove("active"));
       document.getElementById(`screen-${screenId}`).classList.add("active");
       if (btn) btn.classList.add("active");
 
-      if (screenId === "progress") setTimeout(renderBodyCharts, 40);
+      if (screenId === "measurements") setTimeout(renderBodyCharts, 40);
       if (screenId === "analytics") setTimeout(renderExerciseChart, 40);
     }
 
-    // ЭКСПОРТ И ИМПОРТ JSON
+    // ИМПОРТ / ЭКСПОРТ JSON
     function exportDataJson() {
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
@@ -885,10 +826,10 @@
           if (Array.isArray(parsed.entries)) {
             data = { ...defaultData(), ...parsed };
             saveData();
-            alert("База загружена!");
+            alert("Данные успешно импортированы!");
           }
         } catch (err) {
-          alert("Ошибка импорта");
+          alert("Некорректный файл");
         }
       };
       reader.readAsText(file);
@@ -898,7 +839,7 @@
       navigator.serviceWorker.register("./sw.js").catch(() => {});
     }
 
-    initDatePicker();
+    document.getElementById("mDate").value = dateKey(new Date());
     updateUI();
     renderTimer();
   </script>
