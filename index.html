@@ -13,10 +13,10 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
   <style>
-    /* =========================================
-       ТЕМЫ ОФОРМЛЕНИЯ (Apple iOS Standard)
+        /* =========================================
+       ТЕМЫ ОФОРМЛЕНИЯ (Исправленные селекторы)
        ========================================= */
-    :root.dark {
+    body.dark {
       --bg: #000000;
       --card-bg: #1C1C1E;
       --card-border: #2C2C2E;
@@ -35,6 +35,27 @@
       --btn-danger-bg: rgba(255, 69, 58, 0.15);
       --btn-danger-text: #FF453A;
     }
+
+    body.light {
+      --bg: #F2F2F7; /* Классический серый фон iOS */
+      --card-bg: #FFFFFF; /* Белые карточки */
+      --card-border: #E5E5EA;
+      --text-main: #000000;
+      --text-muted: #8E8E93;
+      --text-dim: #AEAEB2;
+      
+      --input-bg: #F2F2F7;
+      
+      --btn-primary-bg: #000000; /* Контрастные черные кнопки */
+      --btn-primary-text: #FFFFFF;
+      
+      --btn-secondary-bg: #E5E5EA;
+      --btn-secondary-text: #000000;
+      
+      --btn-danger-bg: rgba(255, 59, 48, 0.1);
+      --btn-danger-text: #FF3B30;
+    }
+
 
     :root.light {
       --bg: #F2F2F7;
