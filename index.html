@@ -4,8 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>IRONLOG 7.0 Web</title>
+  
+  <!-- PWA & Theme -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0d0f12">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
   <!-- Chart.js для графиков -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
   <style>
     :root {
       --bg: #0d0f12;
@@ -254,6 +262,17 @@
   </nav>
 
   <script>
+    // ============================================================
+    // PWA REGISTRATION (Service Worker)
+    // ============================================================
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js")
+          .then((reg) => console.log("SW зарегистрирован:", reg.scope))
+          .catch((err) => console.log("Ошибка регистрации SW:", err));
+      });
+    }
+
     // ============================================================
     // STORAGE & DATA (localStorage)
     // ============================================================
