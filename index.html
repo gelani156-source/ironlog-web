@@ -74,7 +74,6 @@
         .anatomy-container { display: flex; justify-content: space-around; width: 100%; gap: 15px; }
         .body-figure { width: 140px; height: 260px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.1)); }
         
-        /* Детальные анатомические контуры */
         .muscle { fill: var(--body-base); stroke: var(--body-stroke); stroke-width: 1.2; transition: fill 0.4s ease; }
         .muscle.level-0 { fill: var(--body-base); }
         .muscle.level-1 { fill: var(--green); }
@@ -145,47 +144,29 @@
                     <span>Интенсивность</span>
                 </div>
                 <div class="anatomy-container">
-                    <!-- Спереди (Детальные мышцы) -->
+                    <!-- Спереди -->
                     <svg class="body-figure" viewBox="0 0 140 280" id="body-front">
                         <ellipse cx="70" cy="18" rx="13" ry="16" fill="var(--body-base)" stroke="var(--body-stroke)" stroke-width="1.2"/>
                         <path d="M64,32 L76,32 L78,42 L62,42 Z" fill="var(--body-base)" stroke="var(--body-stroke)" stroke-width="1.2"/>
-                        
-                        <!-- Дельты -->
                         <path class="muscle" id="mf-shoulders-l" d="M40,43 C32,45 26,52 30,62 C35,58 39,52 42,44 Z"/>
                         <path class="muscle" id="mf-shoulders-r" d="M100,43 C108,45 114,52 110,62 C105,58 101,52 98,44 Z"/>
-                        
-                        <!-- Грудные -->
                         <path class="muscle" id="mf-chest-l" d="M43,45 C34,47 33,60 42,65 C48,60 51,52 51,45 Z"/>
                         <path class="muscle" id="mf-chest-r" d="M97,45 C106,47 107,60 98,65 C92,60 89,52 89,45 Z"/>
-                        
-                        <!-- Бицепсы -->
                         <path class="muscle" id="mf-biceps-l" d="M28,64 C24,73 26,85 30,91 C32,83 32,73 28,64 Z"/>
                         <path class="muscle" id="mf-biceps-r" d="M112,64 C116,73 114,85 110,91 C108,83 108,73 112,64 Z"/>
-                        
-                        <!-- Пресс -->
                         <path class="muscle" id="mf-abs" d="M52,67 L88,67 L86,115 L54,115 Z"/>
-                        
-                        <!-- Квадрицепсы -->
                         <path class="muscle" id="mf-legs-l" d="M51,122 C41,126 38,160 45,192 C50,192 54,160 55,122 Z"/>
                         <path class="muscle" id="mf-legs-r" d="M89,122 C99,126 102,160 95,192 C90,192 86,160 85,122 Z"/>
                     </svg>
 
-                    <!-- Сзади (Детальные мышцы) -->
+                    <!-- Сзади -->
                     <svg class="body-figure" viewBox="0 0 140 280" id="body-back">
                         <ellipse cx="70" cy="18" rx="13" ry="16" fill="var(--body-base)" stroke="var(--body-stroke)" stroke-width="1.2"/>
                         <path d="M63,32 L77,32 L80,42 L60,42 Z" fill="var(--body-base)" stroke="var(--body-stroke)" stroke-width="1.2"/>
-                        
-                        <!-- Спина / Трапеции -->
                         <path class="muscle" id="mb-back" d="M44,44 L96,44 C102,72 94,102 87,118 L53,118 C46,102 38,72 44,44 Z"/>
-                        
-                        <!-- Трицепсы -->
                         <path class="muscle" id="mb-triceps-l" d="M27,64 C23,73 25,85 29,91 C31,83 30,73 27,64 Z"/>
                         <path class="muscle" id="mb-triceps-r" d="M113,64 C117,73 115,85 111,91 C109,83 110,73 113,64 Z"/>
-                        
-                        <!-- Ягодицы -->
                         <path class="muscle" id="mb-glutes" d="M48,121 L92,121 C98,143 92,163 70,163 C48,163 42,143 48,121 Z"/>
-                        
-                        <!-- Икры -->
                         <path class="muscle" id="mb-calves-l" d="M47,176 C41,193 44,218 50,233 C53,218 52,193 47,176 Z"/>
                         <path class="muscle" id="mb-calves-r" d="M93,176 C99,193 96,218 90,233 C87,218 88,193 93,176 Z"/>
                     </svg>
@@ -322,7 +303,6 @@
         window.openModal = id => document.getElementById(id).classList.add('open');
         window.closeModal = id => document.getElementById(id).classList.remove('open');
 
-        // Профиль и пропорции силуэта
         function loadProfile() {
             const p = JSON.parse(localStorage.getItem('liftos_profile') || '{"gender":"male","height":178,"age":28}');
             document.getElementById('user-gender').value = p.gender;
@@ -359,7 +339,7 @@
         }
         loadProfile();
 
-        // Парсер из IRONLOG 7.0/8.1
+        // Умный парсер тренировок
         window.parseText = function() {
             const text = document.getElementById('raw-text').value;
             const lines = text.split('\n').filter(l => l.trim().length > 0);
@@ -416,7 +396,7 @@
             `).join('');
         }
 
-        // Хитмап мышц (Зеленый / Желтый / Красный)
+        // Обновление тепловой карты нагрузок мышц
         function updateAnatomyMap() {
             const muscles = document.querySelectorAll('.muscle');
             muscles.forEach(el => {
