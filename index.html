@@ -19,6 +19,8 @@
             --red: #FF3B30;
             --overlay: rgba(0, 0, 0, 0.4);
             --shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            --body-base: #D1D1D6;
+            --body-stroke: #8E8E93;
         }
         [data-theme="dark"] {
             --bg: #000000;
@@ -32,6 +34,8 @@
             --red: #FF453A;
             --overlay: rgba(255, 255, 255, 0.2);
             --shadow: none;
+            --body-base: #2C2C2E;
+            --body-stroke: #636366;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: var(--text); transition: background 0.3s, color 0.3s; display: flex; flex-direction: column; height: 100vh; overflow: hidden; -webkit-font-smoothing: antialiased; }
@@ -68,11 +72,11 @@
         .anatomy-card { background: var(--card-bg); border-radius: 14px; margin: 0 16px 20px; padding: 20px; box-shadow: var(--shadow); display: flex; flex-direction: column; align-items: center; }
         .anatomy-header { display: flex; justify-content: space-between; width: 100%; margin-bottom: 12px; font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
         .anatomy-container { display: flex; justify-content: space-around; width: 100%; gap: 15px; }
-        .body-figure { width: 140px; height: 260px; }
+        .body-figure { width: 140px; height: 260px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)); }
         
-        /* Детальные контуры мышц */
-        .muscle { fill: var(--separator); stroke: var(--card-bg); stroke-width: 1; transition: fill 0.4s ease; }
-        .muscle.level-0 { fill: var(--separator); }
+        /* Детальные контрастные контуры мышц */
+        .muscle { fill: var(--body-base); stroke: var(--body-stroke); stroke-width: 1.5; transition: fill 0.4s ease; }
+        .muscle.level-0 { fill: var(--body-base); }
         .muscle.level-1 { fill: var(--green); }
         .muscle.level-2 { fill: var(--yellow); }
         .muscle.level-3 { fill: var(--red); }
@@ -143,44 +147,34 @@
                 <div class="anatomy-container">
                     <!-- Спереди -->
                     <svg class="body-figure" viewBox="0 0 140 280" id="body-front">
-                        <!-- Голова и шея -->
-                        <ellipse cx="70" cy="20" rx="14" ry="18" fill="var(--separator)"/>
-                        <path d="M63,36 L77,36 L79,45 L61,45 Z" fill="var(--separator)"/>
+                        <ellipse cx="70" cy="20" rx="14" ry="18" fill="var(--body-base)" stroke="var(--body-stroke)" stroke-width="1.5"/>
+                        <path d="M63,36 L77,36 L79,45 L61,45 Z" fill="var(--body-base)" stroke="var(--body-stroke)" stroke-width="1.5"/>
                         
-                        <!-- Плечи / Дельты -->
                         <path class="muscle" id="mf-shoulders-l" d="M42,46 C34,47 28,54 32,64 C37,60 41,54 44,47 Z"/>
                         <path class="muscle" id="mf-shoulders-r" d="M98,46 C106,47 112,54 108,64 C103,60 99,54 96,47 Z"/>
                         
-                        <!-- Грудные -->
                         <path class="muscle" id="mf-chest-l" d="M45,48 C35,50 34,64 43,68 C49,63 52,55 52,48 Z"/>
                         <path class="muscle" id="mf-chest-r" d="M95,48 C105,50 106,64 97,68 C91,63 88,55 88,48 Z"/>
                         
-                        <!-- Бицепсы -->
                         <path class="muscle" id="mf-biceps-l" d="M30,67 C26,76 28,88 32,94 C34,86 34,76 30,67 Z"/>
                         <path class="muscle" id="mf-biceps-r" d="M110,67 C114,76 112,88 108,94 C106,86 106,76 110,67 Z"/>
                         
-                        <!-- Пресс -->
                         <path class="muscle" id="mf-abs" d="M54,70 L86,70 L84,115 L56,115 Z"/>
                         
-                        <!-- Квадрицепсы -->
                         <path class="muscle" id="mf-legs-l" d="M53,126 C43,130 40,165 47,195 C52,195 56,165 57,126 Z"/>
                         <path class="muscle" id="mf-legs-r" d="M87,126 C97,130 100,165 93,195 C88,195 84,165 83,126 Z"/>
                     </svg>
 
                     <!-- Сзади -->
                     <svg class="body-figure" viewBox="0 0 140 280" id="body-back">
-                        <!-- Голова и шея -->
-                        <ellipse cx="70" cy="20" rx="14" ry="18" fill="var(--separator)"/>
-                        <path d="M62,36 L78,36 L81,46 L59,46 Z" fill="var(--separator)"/>
+                        <ellipse cx="70" cy="20" rx="14" ry="18" fill="var(--body-base)" stroke="var(--body-stroke)" stroke-width="1.5"/>
+                        <path d="M62,36 L78,36 L81,46 L59,46 Z" fill="var(--body-base)" stroke="var(--body-stroke)" stroke-width="1.5"/>
                         
-                        <!-- Трапеции и Спина -->
                         <path class="muscle" id="mb-back" d="M46,47 L94,47 C100,75 92,105 85,120 L55,120 C48,105 40,75 46,47 Z"/>
                         
-                        <!-- Трицепсы -->
                         <path class="muscle" id="mb-triceps-l" d="M29,67 C25,76 27,88 31,94 C33,86 32,76 29,67 Z"/>
                         <path class="muscle" id="mb-triceps-r" d="M111,67 C115,76 113,88 109,94 C107,86 108,76 111,67 Z"/>
                         
-                        <!-- Ягодицы и Ноги сзади -->
                         <path class="muscle" id="mb-glutes" d="M50,123 L90,123 C96,145 90,165 70,165 C50,165 44,145 50,123 Z"/>
                         <path class="muscle" id="mb-calves-l" d="M49,178 C43,195 46,220 52,235 C55,220 54,195 49,178 Z"/>
                         <path class="muscle" id="mb-calves-r" d="M91,178 C97,195 94,220 88,235 C85,220 86,195 91,178 Z"/>
@@ -345,9 +339,8 @@
             
             if (gender === 'female') {
                 label.innerText = "Женский силуэт";
-                // Корректируем пропорции SVG под женский атлетичный тип (чуть уже плечи, мягче линии)
-                front.style.transform = "scaleX(0.92)";
-                back.style.transform = "scaleX(0.92)";
+                front.style.transform = "scaleX(0.9)";
+                back.style.transform = "scaleX(0.9)";
             } else {
                 label.innerText = "Мужской силуэт";
                 front.style.transform = "scaleX(1)";
@@ -413,16 +406,17 @@
             `).join('');
         }
 
-        // Динамический хитмап мышц (Зеленый -> Желтый -> Красный в зависимости от тоннажа/подходов)
+        // Хитмап мышц (Зеленый / Желтый / Красный)
         function updateAnatomyMap() {
             const muscles = document.querySelectorAll('.muscle');
             muscles.forEach(el => {
                 el.className.baseVal = "muscle level-0";
+                el.removeAttribute('data-level');
             });
 
             currentWorkout.forEach(p => {
                 const n = p.name.toLowerCase();
-                const intensity = p.weight > 90 ? 3 : (p.weight > 50 ? 2 : 1); // 1: зеленый, 2: желтый, 3: красный
+                const intensity = p.weight > 90 ? 3 : (p.weight > 50 ? 2 : 1);
                 const levelClass = `level-${intensity}`;
 
                 let targetIds = [];
@@ -445,7 +439,6 @@
                 targetIds.forEach(id => {
                     const el = document.getElementById(id);
                     if (el) {
-                        // Сохраняем максимальный уровень интенсивностти
                         const currentLevel = parseInt(el.getAttribute('data-level') || '0', 10);
                         if (intensity > currentLevel) {
                             el.setAttribute('data-level', intensity);
