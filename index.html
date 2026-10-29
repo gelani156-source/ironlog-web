@@ -642,3 +642,342 @@
     });
 
 
+    // ============================================================
+    // ИНТЕРФЕЙС ТЕКУЩЕЙ ТРЕНИРОВКИ
+    // ============================================================
+
+    function renderTodayUI() {
+      const today = dateKey(new Date());
+      const entries = getEntriesByDate(today);
+      const totalVol = entries.reduce((s, e) => s + entryVolume(e), 0);
+
+      document.getElementById("todayDateLabel").textContent = dateLabel(today);
+      document.getElementById("todayVolumeBadge").textContent = `${fmt(totalVol, 0)} ${data.unit}`;
+      document.getElementById("todayExerciseCount").textContent = `Упражнений: ${entries.length}`;
+
+      const listContainer = document.getElementById("todayList");
+      listContainer.innerHTML = "";
+
+      if (!entries.length) {
+        listContainer.innerHTML = `<div style="color: var(--text-dim); font-size: 14px; padding: 12px 0;">Пока нет записей за сегодня</div>`;
+        return;
+      }
+
+      entries.forEach((e, idx) => {
+        const sets = entrySets(e);
+        const bestW = entryBestWeight(e);
+        const setsDetail = sets.map((s, i) => `${s.weight}×${s.reps}`).join("  |  ");
+
+        const el = document.createElement("div");
+        el.className = "exercise-item";
+        el.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: baseline;">
+            <strong style="font-size: 16px;">${idx + 1}. ${e.exercise}</strong>
+            <span style="color: var(--accent-green); font-size: 14px; font-weight: 600;">макс ${bestW} ${data.unit}</span>
+          </div>
+          <div style="color: var(--text-dim); font-size: 13px; margin-top: 4px;">
+            ${sets.length} подх. · ${setsDetail}
+          </div>
+        `;
+        listContainer.appendChild(el);
+      });
+    }
+
+    document.getElementById("btnClearToday").addEventListener("click", () => {
+      const today = dateKey(new Date());
+      if (confirm("Точно удалить все упражнения за сегодня?")) {
+        data.entries = data.entries.filter(e => dateKey(e.date) !== today);
+        saveData(data);
+        renderTodayUI();
+        initAnalyticsTab();
+      }
+    });
+
+    // ============================================================
+    // МОДУЛЬ: ЗАМЕРЫ ВЕСА И ОБЪЕМОВ ТЕЛА
+    // ============================================================
+
+    let weightChartInstance = null;
+
+    function renderWeightChart() {
+      const records = data.measurements.filter(m => m.weight > 0);
+      const ctx = document.getElementById("weightChartCanvas").getContext("2d");
+
+      if (weightChartInstance) {
+        weightChartInstance.destroy();
+      }
+
+      if (records.length < 2) {
+        return;
+      }
+
+      const labels = records.map(m => dateKey(m.date).slice(5));
+      const weights = records.map(m => m.weight);
+
+      weightChartInstance = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: `Вес (${data.unit})`,
+            data: weights,
+            borderColor: "#3B82F6",
+            backgroundColor: "rgba(59, 130, 246, 0.15)",
+            borderWidth: 3,
+            tension: 0.25,
+            fill: true,
+            pointRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: "#D1D5DB" } }
+          },
+          scales: {
+            x: { ticks: { color: "#9CA3AF" }, grid: { color: "#1F2937" } },
+            y: { ticks: { color: "#9CA3AF" }, grid: { color: "#1F2937" } }
+          }
+        }
+      });
+    }
+
+    document.getElementById("btnSaveMeasurement").addEventListener("click", () => {
+      const weight = parseFloat(document.getElementById("mWeight").value) || 0;
+      const waist = parseFloat(document.getElementById("mWaist").value) || 0;
+      const chest = parseFloat(document.getElementById("mChest").value) || 0;
+      const arm = parseFloat(document.getElementById("mArm").value) || 0;
+      const thigh = parseFloat(document.getElementById("mThigh").value) || 0;
+
+      if (!weight && !waist && !chest && !arm && !thigh) {
+        alert("Заполни хотя бы один показатель");
+        return;
+      }
+
+      const today = dateKey(new Date());
+      const existingIdx = data.measurements.findIndex(m => dateKey(m.date) === today);
+
+      const record = {
+        id: makeId(),
+        date: new Date().toISOString(),
+        weight,
+        waist,
+        chest,
+        arm,
+        thigh
+      };
+
+      if (existingIdx !== -1) {
+        data.measurements[existingIdx] = record;
+      } else {
+        data.measurements.push(record);
+      }
+
+      data.measurements.sort((x, y) => new Date(x.date) - new Date(y.date));
+      saveData(data);
+
+      document.getElementById("mWeight").value = "";
+      document.getElementById("mWaist").value = "";
+      document.getElementById("mChest").value = "";
+      document.getElementById("mArm").value = "";
+      document.getElementById("mThigh").value = "";
+
+      renderWeightChart();
+      alert("Замер сохранен!");
+    });
+
+    // ============================================================
+    // МОДУЛЬ: АНАЛИТИКА И 1ПМ
+    // ============================================================
+
+    let strengthChartInstance = null;
+
+    function initAnalyticsTab() {
+      const select = document.getElementById("exerciseSelect");
+      const names = [...new Set(data.entries.map(e => e.exercise))].sort((a, b) => a.localeCompare(b, "ru"));
+
+      select.innerHTML = "";
+      if (!names.length) {
+        select.innerHTML = "<option>Нет сохраненных упражнений</option>";
+        return;
+      }
+
+      names.forEach(name => {
+        const opt = document.createElement("option");
+        opt.value = name;
+        opt.textContent = name;
+        select.appendChild(opt);
+      });
+
+      renderStrengthChart(names[0]);
+    }
+
+    function renderStrengthChart(target) {
+      if (!target) return;
+      const history = data.entries
+        .filter(e => e.exercise === target)
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      const ctx = document.getElementById("strengthChartCanvas").getContext("2d");
+
+      if (strengthChartInstance) {
+        strengthChartInstance.destroy();
+      }
+
+      const labels = history.map(e => dateKey(e.date).slice(5));
+      const weights = history.map(e => entryBestWeight(e));
+      const oneRMs = history.map(e => Math.round(entryBest1RM(e)));
+
+      strengthChartInstance = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: `Макс вес (${data.unit})`,
+              data: weights,
+              borderColor: "#10B981",
+              backgroundColor: "rgba(16, 185, 129, 0.15)",
+              borderWidth: 3,
+              tension: 0.3,
+              pointRadius: 4
+            },
+            {
+              label: `Расчетный 1ПМ (~${data.unit})`,
+              data: oneRMs,
+              borderColor: "#3B82F6",
+              borderDash: [5, 5],
+              borderWidth: 2,
+              tension: 0.3,
+              pointRadius: 3
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: "#D1D5DB" } }
+          },
+          scales: {
+            x: { ticks: { color: "#9CA3AF" }, grid: { color: "#1F2937" } },
+            y: { ticks: { color: "#9CA3AF" }, grid: { color: "#1F2937" } }
+          }
+        }
+      });
+    }
+
+    document.getElementById("exerciseSelect").addEventListener("change", (e) => {
+      renderStrengthChart(e.target.value);
+    });
+
+    // ============================================================
+    // ГЕНЕРАТОР КАРТОЧКИ ТРЕНИРОВКИ (CANVAS SHARE IMAGE)
+    // ============================================================
+
+    document.getElementById("btnGenCard").addEventListener("click", () => {
+      const today = dateKey(new Date());
+      const entries = getEntriesByDate(today);
+
+      if (!entries.length) {
+        alert("За сегодня нет записей для карточки");
+        return;
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = 800;
+      canvas.height = 1000;
+      const ctx = canvas.getContext("2d");
+
+      // Фон
+      ctx.fillStyle = "#0D0F12";
+      ctx.fillRect(0, 0, 800, 1000);
+
+      // Верхняя полоса
+      ctx.fillStyle = "#10B981";
+      ctx.fillRect(0, 0, 800, 12);
+
+      // Заголовок
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "bold 38px -apple-system, sans-serif";
+      ctx.fillText("IRONLOG WORKOUT", 50, 70);
+
+      // Дата
+      ctx.fillStyle = "#9CA3AF";
+      ctx.font = "20px -apple-system, sans-serif";
+      ctx.fillText(dateLabel(today).toUpperCase(), 50, 115);
+
+      // Разделитель
+      ctx.strokeStyle = "#1F2937";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(50, 140);
+      ctx.lineTo(750, 140);
+      ctx.stroke();
+
+      // Список упражнений (до 8)
+      let y = 190;
+      for (let i = 0; i < Math.min(entries.length, 8); i++) {
+        const e = entries[i];
+        const sets = entrySets(e);
+        const bestW = entryBestWeight(e);
+
+        ctx.fillStyle = "#F3F4F6";
+        ctx.font = "bold 24px -apple-system, sans-serif";
+        ctx.fillText(`${i + 1}. ${e.exercise}`, 50, y);
+
+        ctx.fillStyle = "#10B981";
+        ctx.font = "600 22px -apple-system, sans-serif";
+        ctx.fillText(`${sets.length} подх. · макс ${bestW} ${data.unit}`, 480, y);
+
+        y += 35;
+        ctx.fillStyle = "#6B7280";
+        ctx.font = "16px -apple-system, sans-serif";
+        const setsDetail = sets.map(s => `${s.weight}×${s.reps}`).join("  |  ");
+        ctx.fillText(setsDetail, 75, y);
+
+        y += 50;
+      }
+
+      // Плашка тоннажа внизу
+      const totalVol = entries.reduce((s, e) => s + entryVolume(e), 0);
+      ctx.fillStyle = "#111827";
+      ctx.fillRect(50, 840, 700, 100);
+
+      ctx.fillStyle = "#9CA3AF";
+      ctx.font = "18px -apple-system, sans-serif";
+      ctx.fillText("СУММАРНЫЙ ТОННАЖ", 75, 875);
+
+      ctx.fillStyle = "#10B981";
+      ctx.font = "bold 36px -apple-system, sans-serif";
+      ctx.fillText(`${fmt(totalVol, 0)} ${data.unit}`, 75, 915);
+
+      // Скачивание полученного изображения
+      const link = document.createElement("a");
+      link.download = `ironlog-${today}.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    });
+
+    // ============================================================
+    // НАВИГАЦИЯ МЕЖДУ ВКЛАДКАМИ
+    // ============================================================
+
+    window.switchTab = function(tabId, btn) {
+      document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
+      document.querySelectorAll(".nav-item").forEach(el => el.classList.remove("active"));
+
+      document.getElementById(tabId).classList.add("active");
+      btn.classList.add("active");
+
+      if (tabId === "tab-measurements") {
+        renderWeightChart();
+      } else if (tabId === "tab-analytics") {
+        initAnalyticsTab();
+      }
+    };
+
+    // Стартовая инициализация
+    renderTodayUI();
+  </script>
