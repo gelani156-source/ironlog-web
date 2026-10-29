@@ -1,908 +1,299 @@
 <!DOCTYPE html>
-<html lang="ru" data-theme="dark">
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-  <title>IRONLOG</title>
-  <link rel="manifest" href="manifest.json">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="IRONLOG">
-  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='115' fill='%23007aff'/><path d='M140 256h232M170 190v132M342 190v132M205 210v92M307 210v92' stroke='%23ffffff' stroke-width='34' stroke-linecap='round'/></svg>">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>IRONLOG 7.0 Web</title>
+  <!-- Chart.js для графиков веса и силовых -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
   <style>
-    /* ТЕМНАЯ ТЕМА APPLE */
-    :root[data-theme="dark"] {
-      --system-bg: #000000;
-      --card-bg: #1c1c1e;
-      --input-bg: #2c2c2e;
-      --separator: rgba(255, 255, 255, 0.12);
-      --label-primary: #ffffff;
-      --label-secondary: #8e8e93;
-      --apple-blue: #0a84ff; /* Стандартный синий iOS для темной темы */
-      --destructive: #ff453a;
-      --tab-bg: rgba(28, 28, 30, 0.92);
-      --switch-track: #39393d;
-    }
-
-    /* СВЕТЛАЯ ТЕМА APPLE (КАК В «НАСТРОЙКАХ») */
-    :root[data-theme="light"] {
-      --system-bg: #f2f2f7; /* Фон системных Настроек */
-      --card-bg: #ffffff;   /* Чистые белые плашки */
-      --input-bg: #f2f2f7;
-      --separator: rgba(60, 60, 67, 0.15);
-      --label-primary: #000000;
-      --label-secondary: #8e8e93;
-      --apple-blue: #007aff; /* Стандартный синий iOS для светлой темы */
-      --destructive: #ff3b30;
-      --tab-bg: rgba(249, 249, 249, 0.92);
-      --switch-track: #e5e5ea;
+    :root {
+      --bg: #0d0f12;
+      --card-bg: #161a1f;
+      --card-border: #232931;
+      --accent-green: #10B981;
+      --accent-blue: #3B82F6;
+      --accent-red: #EF4444;
+      --accent-yellow: #F59E0B;
+      --accent-purple: #8B5CF6;
+      --text-main: #FFFFFF;
+      --text-muted: #9CA3AF;
+      --text-dim: #6B7280;
     }
 
     * {
       box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
       margin: 0;
       padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
     body {
-      background-color: var(--system-bg);
-      color: var(--label-primary);
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", sans-serif;
-      padding: calc(env(safe-area-inset-top, 20px) + 8px) 16px calc(env(safe-area-inset-bottom, 20px) + 80px) 16px;
-      user-select: none;
-      -webkit-user-select: none;
-      transition: background-color 0.25s ease, color 0.25s ease;
+      background-color: var(--bg);
+      color: var(--text-main);
+      padding: env(safe-area-inset-top, 16px) 16px calc(env(safe-area-inset-bottom, 16px) + 70px) 16px;
+      min-height: 100vh;
     }
 
-    /* ШАПКА */
     header {
-      padding: 8px 4px 14px;
-    }
-    .header-top-row {
+      padding: 12px 0 20px;
+      border-bottom: 1px solid var(--card-border);
+      margin-bottom: 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 4px;
     }
-    .header-date {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--label-secondary);
-      text-transform: uppercase;
-      letter-spacing: -0.2px;
+
+    .app-title {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: var(--text-main);
     }
-    .header-weight-pill {
+
+    .badge-unit {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-green);
       font-size: 13px;
-      font-weight: 600;
-      color: var(--apple-blue);
-      background: rgba(10, 132, 255, 0.12);
+      font-weight: 700;
       padding: 4px 10px;
       border-radius: 12px;
-    }
-    .header-title-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .header-title {
-      font-size: 34px;
-      font-weight: 800;
-      letter-spacing: -0.6px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
     }
 
-    /* ФИРМЕННЫЙ ТУМБЛЕР IOS (APPLE SWITCH) */
-    .theme-toggle-box {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .ios-switch {
-      position: relative;
-      width: 51px;
-      height: 31px;
-      background: var(--switch-track);
-      border-radius: 31px;
-      cursor: pointer;
-      transition: background 0.25s cubic-bezier(0.2, 0.85, 0.32, 1.2);
-    }
-    .ios-switch.active {
-      background: #34c759; /* Зеленый тумблер iOS во включенном состоянии */
-    }
-    .ios-switch-thumb {
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      width: 27px;
-      height: 27px;
-      background: #ffffff;
-      border-radius: 50%;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
-      transition: transform 0.25s cubic-bezier(0.2, 0.85, 0.32, 1.2);
-    }
-    .ios-switch.active .ios-switch-thumb {
-      transform: translateX(20px);
-    }
-
-    /* ПЛАШКИ INSET GROUPED */
     .card {
       background: var(--card-bg);
+      border: 1px solid var(--card-border);
       border-radius: 16px;
       padding: 16px;
       margin-bottom: 16px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-      transition: background-color 0.25s ease;
     }
+
     .card-title {
       font-size: 17px;
-      font-weight: 600;
-      letter-spacing: -0.4px;
-      margin-bottom: 12px;
+      font-weight: 700;
+      margin-bottom: 6px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
-    /* ПОЛЯ ВВОДА */
-    .input-row {
+    .card-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .btn {
+      width: 100%;
+      background: var(--accent-green);
+      color: #000;
+      font-weight: 700;
+      font-size: 15px;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: opacity 0.15s ease;
+    }
+
+    .btn:active {
+      opacity: 0.8;
+    }
+
+    .btn-secondary {
+      background: #1F2937;
+      color: var(--text-main);
+    }
+
+    .btn-blue {
+      background: var(--accent-blue);
+      color: #fff;
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--accent-red);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    textarea, input {
+      width: 100%;
+      background: #0d0f12;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 12px;
+      color: #fff;
+      font-size: 15px;
+      margin-bottom: 12px;
+      outline: none;
+    }
+
+    textarea:focus, input:focus {
+      border-color: var(--accent-green);
+    }
+
+    .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
-      margin-bottom: 10px;
-    }
-    input, textarea, select {
-      width: 100%;
-      background: var(--input-bg);
-      border: 0.5px solid var(--separator);
-      color: var(--label-primary);
-      border-radius: 10px;
-      padding: 12px 14px;
-      font-size: 16px;
-      font-family: inherit;
-      outline: none;
-    }
-    input[type="date"] {
-      min-height: 44px;
-      -webkit-appearance: none;
     }
 
-    /* СТАНДАРТНАЯ СИНЯЯ КНОПКА APPLE */
-    .btn {
-      width: 100%;
-      background: var(--apple-blue);
-      color: #ffffff;
-      border: none;
-      border-radius: 12px;
-      padding: 14px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transition: opacity 0.15s ease;
-    }
-    .btn:active {
-      opacity: 0.75;
-      transform: scale(0.99);
-    }
-    .btn-secondary {
-      background: var(--input-bg);
-      color: var(--label-primary);
-      border: 0.5px solid var(--separator);
-    }
-    .btn-danger {
-      background: rgba(255, 59, 48, 0.12);
-      color: var(--destructive);
-    }
-
-    /* КАРТОЧКА УПРАЖНЕНИЯ И СТРОКИ ПОДХОДОВ */
-    .exercise-box {
-      background: var(--input-bg);
-      border-radius: 12px;
-      padding: 14px;
-      margin-bottom: 12px;
-    }
-    .exercise-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-    .exercise-name {
-      font-size: 16px;
-      font-weight: 700;
-      letter-spacing: -0.3px;
-    }
-    .exercise-status {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--label-secondary);
-    }
-
-    /* СТРОКА ПОДХОДА */
-    .set-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 11px 0;
-      border-top: 0.5px solid var(--separator);
-    }
-    .set-info {
-      font-size: 15px;
-      font-weight: 500;
-      font-variant-numeric: tabular-nums;
-    }
-    .set-row.completed .set-info {
-      color: var(--label-secondary);
-      text-decoration: line-through;
-    }
-
-    /* СИНИЙ ЧЕКБОКС IOS */
-    .ios-circle-check {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      border: 2px solid var(--label-secondary);
-      background: transparent;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-    }
-    .ios-circle-check:active {
-      transform: scale(0.85);
-    }
-    .set-row.completed .ios-circle-check {
-      background: var(--apple-blue);
-      border-color: var(--apple-blue);
-    }
-    .ios-circle-check svg {
-      width: 14px;
-      height: 14px;
-      fill: none;
-      stroke: #ffffff;
-      stroke-width: 3.4;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      display: none;
-    }
-    .set-row.completed .ios-circle-check svg {
-      display: block;
-    }
-
-    /* ТАБ-БАР */
-    nav.tab-bar {
+    /* Навигация внизу экрана под мобильные устройства */
+    .bottom-nav {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      height: calc(52px + env(safe-area-inset-bottom, 0px));
-      background: var(--tab-bg);
-      backdrop-filter: blur(25px);
-      -webkit-backdrop-filter: blur(25px);
-      border-top: 0.5px solid var(--separator);
+      background: rgba(22, 26, 31, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-top: 1px solid var(--card-border);
       display: flex;
       justify-content: space-around;
-      padding-top: 4px;
-      z-index: 1000;
+      padding: 10px 0 calc(env(safe-area-inset-bottom, 10px) + 4px);
+      z-index: 100;
     }
-    .tab-item {
-      background: none;
-      border: none;
-      color: var(--label-secondary);
+
+    .nav-item {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 3px;
-      font-size: 10px;
-      font-weight: 500;
-      width: 25%;
-    }
-    .tab-item.active {
-      color: var(--apple-blue);
+      color: var(--text-muted);
+      font-size: 11px;
       font-weight: 600;
-    }
-    .tab-icon {
-      font-size: 20px;
+      gap: 4px;
+      cursor: pointer;
+      background: none;
+      border: none;
     }
 
-    .screen { display: none; }
-    .screen.active { display: block; }
-    .timer-val {
-      font-size: 64px;
-      font-weight: 800;
-      color: var(--apple-blue);
-      text-align: center;
-      font-variant-numeric: tabular-nums;
-      margin: 18px 0;
+    .nav-item.active {
+      color: var(--accent-green);
     }
-    .chart-container { position: relative; height: 220px; width: 100%; }
+
+    .nav-item svg {
+      width: 22px;
+      height: 22px;
+      fill: currentColor;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .exercise-item {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .exercise-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .chart-container {
+      position: relative;
+      height: 320px;
+      width: 100%;
+      margin-top: 10px;
+    }
   </style>
 </head>
-
-
 <body>
 
-  <!-- ШАПКА С ТУМБЛЕРОМ -->
   <header>
-    <div class="header-top-row">
-      <div class="header-date" id="topDateStr">Четверг, 29 октября</div>
-      <div class="header-weight-pill" id="topWeightBadge">82.0 кг</div>
-    </div>
-    <div class="header-title-row">
-      <div class="header-title">IRONLOG</div>
-      
-      <!-- СИСТЕМНЫЙ ТУМБЛЕР СВЕТЛАЯ / ТЕМНАЯ ТЕМА -->
-      <div class="theme-toggle-box" onclick="toggleTheme()">
-        <span style="font-size: 12px; font-weight: 600; color: var(--label-secondary);">ТЕМНАЯ</span>
-        <div class="ios-switch active" id="themeSwitch">
-          <div class="ios-switch-thumb"></div>
-        </div>
-      </div>
-    </div>
+    <div class="app-title">IRONLOG 7.0</div>
+    <div class="badge-unit" id="headerUnit">КГ</div>
   </header>
 
-  <!-- ВКЛАДКА 1: СЕГОДНЯ -->
-  <section id="screen-today" class="screen active">
-    
-    <!-- ПОЛЕ ВСТАВКИ ТРЕНИРОВКИ -->
-    <div class="card">
-      <div class="card-title">Импорт тренировки</div>
-      <textarea id="planInput" rows="3" placeholder="Вставьте текст (например: Жим 105 1/6, Присед 115 5/5)..."></textarea>
-      <!-- СТАНДАРТНАЯ СИНЯЯ КНОПКА APPLE -->
-      <button class="btn" style="margin-top: 10px;" onclick="parseAndSavePlan()">Записать на сегодня</button>
-    </div>
-
-    <!-- ТРЕНИРОВКА ТЕКУЩЕГО ДНЯ С ЧЕКБОКСАМИ -->
+  <!-- Вкладка: Тренировки / Импорт -->
+  <section id="tab-workout" class="tab-content active">
     <div class="card">
       <div class="card-title">
-        <span>План на сегодня</span>
-        <span id="sessionVolume" style="font-size: 13px; color: var(--apple-blue); font-weight: 600;">0 кг</span>
+        <span>📋 Импорт из Заметок</span>
       </div>
-      
-      <div id="todayList">
-        <!-- Упражнения с круглыми галочками -->
-      </div>
+      <div class="card-subtitle">Вставь план тренировки в формате: Жим 80 4/6 или Становая 4*10 100</div>
+      <input type="text" id="workoutTitleInput" placeholder="Название (например: Грудь + Бицепс)" value="Тренировка">
+      <textarea id="importTextInput" rows="4" placeholder="Вставь сюда скопированный текст из Заметок..."></textarea>
+      <button class="btn" id="btnParseImport">Распознать и записать</button>
+    </div>
 
-      <div id="clearDayBtnBox" style="display: none; margin-top: 14px;">
-        <button class="btn btn-danger" onclick="clearToday()">Очистить день</button>
+    <div class="card" id="todaySummaryCard">
+      <div class="card-title">
+        <span id="todayDateLabel">Сегодня</span>
+        <span class="badge-unit" id="todayVolumeBadge">0 кг</span>
+      </div>
+      <div class="card-subtitle" id="todayExerciseCount">Упражнений: 0</div>
+      <div id="todayList"></div>
+      <div class="grid-2" style="margin-top: 14px;">
+        <button class="btn btn-blue" id="btnGenCard">🖼 Карточка</button>
+        <button class="btn btn-danger" id="btnClearToday">Очистить</button>
       </div>
     </div>
   </section>
 
-  <!-- ВКЛАДКА 2: ТАЙМЕР ОТДЫХА -->
-  <section id="screen-timer" class="screen">
-    <div class="card" style="text-align: center; padding: 26px 16px;">
-      <div class="card-title" style="justify-content: center;">Таймер отдыха</div>
-      <div class="timer-val" id="timerCount">01:30</div>
-      <div class="input-row">
-        <button class="btn" id="timerStartBtn" onclick="toggleTimer()">Старт</button>
-        <button class="btn btn-secondary" onclick="resetTimer(90)">90 сек</button>
-      </div>
-      <div class="input-row" style="margin-top: 8px;">
-        <button class="btn btn-secondary" onclick="addTimerSeconds(30)">+30 сек</button>
-        <button class="btn btn-secondary" onclick="resetTimer(120)">120 сек</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- ВКЛАДКА 3: ЗАМЕРЫ ТЕЛА -->
-  <section id="screen-measurements" class="screen">
+  <!-- Вкладка: Замеры тела -->
+  <section id="tab-measurements" class="tab-content">
     <div class="card">
-      <div class="card-title">Внести замер</div>
-      <div style="margin-bottom: 10px;">
-        <input type="date" id="mDate">
-      </div>
-      <div class="input-row">
+      <div class="card-title">⚖️ Новый замер</div>
+      <div class="card-subtitle">Заполни текущие показатели</div>
+      <div class="grid-2">
         <input type="number" step="0.1" id="mWeight" placeholder="Вес тела (кг)">
-        <input type="number" step="0.5" id="mWaist" placeholder="Талия (см)">
+        <input type="number" step="0.1" id="mWaist" placeholder="Талия (см)">
+        <input type="number" step="0.1" id="mChest" placeholder="Грудь (см)">
+        <input type="number" step="0.1" id="mArm" placeholder="Бицепс (см)">
       </div>
-      <div class="input-row">
-        <input type="number" step="0.5" id="mChest" placeholder="Грудная клетка (см)">
-        <input type="number" step="0.5" id="mThigh" placeholder="Бедро (см)">
-      </div>
-      <div style="margin-bottom: 10px;">
-        <input type="number" step="0.5" id="mArm" placeholder="Обхват плеча / бицепс (см)">
-      </div>
-      <!-- СТАНДАРТНАЯ СИНЯЯ КНОПКА APPLE -->
-      <button class="btn" onclick="saveMeasurement()">Сохранить параметры</button>
+      <input type="number" step="0.1" id="mThigh" placeholder="Бедро (см)">
+      <button class="btn" id="btnSaveMeasurement">Сохранить замер</button>
     </div>
 
     <div class="card">
-      <div class="card-title">Динамика веса тела</div>
+      <div class="card-title">📊 График веса тела</div>
       <div class="chart-container">
-        <canvas id="chartWeight"></canvas>
+        <canvas id="weightChartCanvas"></canvas>
       </div>
     </div>
   </section>
 
-  <!-- ВКЛАДКА 4: АНАЛИЗ И БЭКАП -->
-  <section id="screen-analytics" class="screen">
+  <!-- Вкладка: Аналитика и 1ПМ -->
+  <section id="tab-analytics" class="tab-content">
     <div class="card">
-      <div class="card-title">График прогресса (1ПМ)</div>
-      <select id="exerciseSelect" onchange="renderExerciseChart()" style="margin-bottom: 12px;"></select>
+      <div class="card-title">📈 Прогресс силовых (1ПМ)</div>
+      <select id="exerciseSelect" style="width: 100%; background: #0d0f12; border: 1px solid var(--card-border); color: #fff; padding: 12px; border-radius: 10px; margin-bottom: 12px;"></select>
       <div class="chart-container">
-        <canvas id="chartExercise"></canvas>
+        <canvas id="strengthChartCanvas"></canvas>
       </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">Резервная копия данных</div>
-      <p style="color: var(--label-secondary); font-size: 13px; margin-bottom: 12px;">Сохраните JSON в «Файлы» (iCloud Drive), чтобы история всегда была под рукой.</p>
-      <div class="input-row">
-        <button class="btn btn-secondary" onclick="exportDataJson()">Скачать JSON</button>
-        <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">Восстановить</button>
-      </div>
-      <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importDataJson(event)">
     </div>
   </section>
 
-  <!-- ТАБ-БАР В СТИЛЕ IOS -->
-  <nav class="tab-bar">
-    <button class="tab-item active" onclick="switchTab('today', this)">
-      <span class="tab-icon">🏋️</span>Сегодня
+  <!-- Нижняя панель навигации -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="switchTab('tab-workout', this)">
+      <svg viewBox="0 0 24 24"><path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43 1.43 1.43 2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43 1.43-1.43z"/></svg>
+      <span>Тренировка</span>
     </button>
-    <button class="tab-item" onclick="switchTab('timer', this)">
-      <span class="tab-icon">⏱</span>Таймер
+    <button class="nav-item" onclick="switchTab('tab-measurements', this)">
+      <svg viewBox="0 0 24 24"><path d="M12 3C7.03 3 3 7.03 3 12c0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.28 19.64 10.59 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm1-9h-2v4h4v-2h-2z"/></svg>
+      <span>Замеры</span>
     </button>
-    <button class="tab-item" onclick="switchTab('measurements', this)">
-      <span class="tab-icon">⚖️</span>Замеры
-    </button>
-    <button class="tab-item" onclick="switchTab('analytics', this)">
-      <span class="tab-icon">📊</span>Анализ
+    <button class="nav-item" onclick="switchTab('tab-analytics', this)">
+      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+      <span>Аналитика</span>
     </button>
   </nav>
 
-
-  <script>
-    const STORAGE_KEY = "ironlog_db_v1";
-    const THEME_KEY = "ironlog_theme_v2";
-
-    function defaultData() {
-      return { unit: "кг", entries: [], measurements: [] };
-    }
-
-    function loadData() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        return raw ? { ...defaultData(), ...JSON.parse(raw) } : defaultData();
-      } catch (e) {
-        return defaultData();
-      }
-    }
-
-    let data = loadData();
-    function saveData() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      updateUI();
-    }
-
-    function dateKey(val) {
-      const d = new Date(val);
-      return [
-        d.getFullYear(),
-        String(d.getMonth() + 1).padStart(2, "0"),
-        String(d.getDate()).padStart(2, "0")
-      ].join("-");
-    }
-
-    // ТУМБЛЕР СВЕТЛАЯ / ТЕМНАЯ ТЕМА
-    function initTheme() {
-      const savedTheme = localStorage.getItem(THEME_KEY) || "dark";
-      document.documentElement.setAttribute("data-theme", savedTheme);
-      const sw = document.getElementById("themeSwitch");
-      if (savedTheme === "dark") {
-        sw.classList.add("active");
-      } else {
-        sw.classList.remove("active");
-      }
-    }
-
-    function toggleTheme() {
-      const current = document.documentElement.getAttribute("data-theme") || "dark";
-      const next = current === "dark" ? "light" : "dark";
-      document.documentElement.setAttribute("data-theme", next);
-      localStorage.setItem(THEME_KEY, next);
-      
-      const sw = document.getElementById("themeSwitch");
-      if (next === "dark") {
-        sw.classList.add("active");
-      } else {
-        sw.classList.remove("active");
-      }
-
-      renderBodyCharts();
-      renderExerciseChart();
-    }
-
-    // ПАРСЕР ТЕКСТА
-    function parseSingleItem(rawContent) {
-      let text = String(rawContent || "").trim()
-        .replace(/^\s*[-*•]\s*/, "")
-        .replace(/^\s*\d+[.)]\s*/, "")
-        .replace(/^\s*\[[ xX]?\]\s*/, "")
-        .replace(/[·]/g, " ")
-        .replace(/\bкг\b/gi, "")
-        .replace(/\bkg\b/gi, "")
-        .replace(/\s+/g, " ")
-        .trim();
-
-      if (!text || text.length < 2) return null;
-      if (/^(понедельник|вторник|среда|четверг|пятница|суббота|воскресенье)$/i.test(text)) return null;
-
-      // Формат: Шраги 4/20 60
-      const reverseFormat = text.match(/^(.+?)\s+(\d+)\s*[\/xх*]\s*(\d+)\s+(\d+(?:[.,]\d+)?)(?:\s+.*)?$/i);
-      if (reverseFormat) {
-        const name = reverseFormat[1].trim();
-        const sets = parseInt(reverseFormat[2], 10);
-        const reps = parseInt(reverseFormat[3], 10);
-        const weight = parseFloat(reverseFormat[4].replace(",", "."));
-        return { name, setsData: Array.from({ length: sets }, () => ({ weight, reps, done: false })) };
-      }
-
-      // Формат: Жим 80 4/6
-      const multiRegex = /(\d+(?:[.,]\d+)?)\s+(\d+)\s*[\/xх*]\s*(\d+)/g;
-      const blocks = [];
-      let block;
-      while ((block = multiRegex.exec(text)) !== null) {
-        blocks.push({
-          weight: parseFloat(block[1].replace(",", ".")),
-          sets: parseInt(block[2], 10),
-          reps: parseInt(block[3], 10)
-        });
-      }
-
-      if (blocks.length > 0) {
-        const name = text.slice(0, text.search(/(\d+(?:[.,]\d+)?)\s+(\d+)\s*[\/xх*]\s*(\d+)/)).trim();
-        const setsData = [];
-        for (const b of blocks) {
-          for (let i = 0; i < b.sets; i++) setsData.push({ weight: b.weight, reps: b.reps, done: false });
-        }
-        return { name: name || text, setsData };
-      }
-
-      // Формат: Пресс 4*20
-      const setsFirst = text.match(/^(.+?)\s+(\d+)\s*[\/xх*]\s*(\d+)(?:\s+(\d+(?:[.,]\d+)?))?$/);
-      if (setsFirst) {
-        const name = setsFirst[1].trim();
-        const sets = parseInt(setsFirst[2], 10);
-        const reps = parseInt(setsFirst[3], 10);
-        const weight = setsFirst[4] ? parseFloat(setsFirst[4].replace(",", ".")) : 0;
-        return { name, setsData: Array.from({ length: sets }, () => ({ weight, reps, done: false })) };
-      }
-
-      return null;
-    }
-
-    // ИМПОРТ ПЛАНА НА ТЕКУЩИЙ ДЕНЬ
-    function parseAndSavePlan() {
-      const input = document.getElementById("planInput").value.trim();
-      if (!input) return;
-      const lines = input.split(/\r?\n|;/).map(l => l.trim()).filter(Boolean);
-      const nowIso = new Date().toISOString();
-
-      for (const line of lines) {
-        const item = parseSingleItem(line);
-        if (item && item.name) {
-          data.entries.push({
-            id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-            date: nowIso,
-            exercise: item.name,
-            setsData: item.setsData
-          });
-        }
-      }
-
-      document.getElementById("planInput").value = "";
-      saveData();
-    }
-
-    // ТАП НА СИНИЙ ЧЕКБОКС ПОДХОДА + ВИБРО И АВТОТАЙМЕР
-    function toggleSetDone(entryId, setIndex) {
-      const entry = data.entries.find(e => e.id === entryId);
-      if (!entry || !entry.setsData[setIndex]) return;
-
-      const isDone = !entry.setsData[setIndex].done;
-      entry.setsData[setIndex].done = isDone;
-      saveData();
-
-      if (isDone) {
-        if (navigator.vibrate) navigator.vibrate(35);
-        resetTimer(90);
-        toggleTimer(); // автостарт 90 сек отдыха
-      }
-    }
-
-    function clearToday() {
-      if (!confirm("Очистить тренировку за сегодня?")) return;
-      const today = dateKey(new Date());
-      data.entries = data.entries.filter(e => dateKey(e.date) !== today);
-      saveData();
-    }
-
-
-    // МОДУЛЬ ТАЙМЕРА
-    let timerInterval = null;
-    let timerSec = 90;
-
-    function renderTimer() {
-      const m = String(Math.floor(timerSec / 60)).padStart(2, "0");
-      const s = String(timerSec % 60).padStart(2, "0");
-      document.getElementById("timerCount").innerText = `${m}:${s}`;
-    }
-
-    function toggleTimer() {
-      const btn = document.getElementById("timerStartBtn");
-      if (timerInterval) {
-        clearInterval(timerInterval);
-        timerInterval = null;
-        btn.innerText = "Старт";
-      } else {
-        btn.innerText = "Пауза";
-        timerInterval = setInterval(() => {
-          if (timerSec > 0) {
-            timerSec--;
-            renderTimer();
-          } else {
-            clearInterval(timerInterval);
-            timerInterval = null;
-            btn.innerText = "Старт";
-            if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
-            alert("Время отдыха завершено! 💪");
-          }
-        }, 1000);
-      }
-    }
-
-    function resetTimer(sec) {
-      if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-      timerSec = sec;
-      document.getElementById("timerStartBtn").innerText = "Старт";
-      renderTimer();
-    }
-
-    function addTimerSeconds(sec) {
-      timerSec += sec;
-      renderTimer();
-    }
-
-    // ЗАМЕРЫ
-    function saveMeasurement() {
-      const chosenDate = document.getElementById("mDate").value || dateKey(new Date());
-      const weight = parseFloat(document.getElementById("mWeight").value) || 0;
-      const waist = parseFloat(document.getElementById("mWaist").value) || 0;
-      const chest = parseFloat(document.getElementById("mChest").value) || 0;
-      const thigh = parseFloat(document.getElementById("mThigh").value) || 0;
-      const arm = parseFloat(document.getElementById("mArm").value) || 0;
-
-      if (!weight && !waist && !chest && !thigh && !arm) {
-        alert("Заполните хотя бы одно поле!");
-        return;
-      }
-
-      const existingIdx = data.measurements.findIndex(m => dateKey(m.date) === chosenDate);
-      const record = {
-        id: Date.now().toString(36),
-        date: new Date(chosenDate + "T12:00:00").toISOString(),
-        weight, waist, chest, thigh, arm
-      };
-
-      if (existingIdx !== -1) data.measurements[existingIdx] = record;
-      else data.measurements.push(record);
-
-      data.measurements.sort((a, b) => new Date(a.date) - new Date(b.date));
-      saveData();
-      alert("Параметры зафиксированы!");
-    }
-
-    // ГРАФИКИ CHART.JS С АДАПТАЦИЕЙ ПОД ТЕМУ
-    let weightChartInstance = null;
-    let exerciseChartInstance = null;
-
-    function getGridColor() {
-      return document.documentElement.getAttribute("data-theme") === "light" 
-        ? "rgba(60, 60, 67, 0.12)" 
-        : "rgba(255, 255, 255, 0.08)";
-    }
-
-    function getBlueColor() {
-      return document.documentElement.getAttribute("data-theme") === "light" ? "#007aff" : "#0a84ff";
-    }
-
-    function renderBodyCharts() {
-      const m = data.measurements || [];
-      const labels = m.map(x => dateKey(x.date).slice(5));
-      const weights = m.map(x => x.weight || null);
-
-      const ctx = document.getElementById("chartWeight").getContext("2d");
-      if (weightChartInstance) weightChartInstance.destroy();
-      weightChartInstance = new Chart(ctx, {
-        type: "line",
-        data: {
-          labels,
-          datasets: [{
-            data: weights,
-            borderColor: getBlueColor(),
-            backgroundColor: "rgba(10, 132, 255, 0.12)",
-            borderWidth: 2.5,
-            tension: 0.3,
-            fill: true,
-            pointRadius: 4,
-            pointBackgroundColor: getBlueColor()
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { ticks: { color: "#8e8e93", font: { size: 10 } }, grid: { color: getGridColor() } },
-            y: { ticks: { color: "#8e8e93", font: { size: 10 } }, grid: { color: getGridColor() } }
-          }
-        }
-      });
-    }
-
-    function updateExerciseSelect() {
-      const sel = document.getElementById("exerciseSelect");
-      const names = [...new Set(data.entries.map(e => e.exercise))].sort((a, b) => a.localeCompare(b, "ru"));
-      const cur = sel.value;
-      sel.innerHTML = names.map(n => `<option value="${n}">${n}</option>`).join("");
-      if (names.includes(cur)) sel.value = cur;
-      renderExerciseChart();
-    }
-
-    function renderExerciseChart() {
-      const sel = document.getElementById("exerciseSelect");
-      const name = sel.value;
-      if (!name) return;
-
-      const history = data.entries.filter(e => e.exercise === name).sort((a, b) => new Date(a.date) - new Date(b.date));
-      const labels = history.map(e => dateKey(e.date).slice(5));
-      const maxWeights = history.map(e => Math.max(0, ...(e.setsData || []).map(s => Number(s.weight) || 0)));
-
-      const ctx = document.getElementById("chartExercise").getContext("2d");
-      if (exerciseChartInstance) exerciseChartInstance.destroy();
-      exerciseChartInstance = new Chart(ctx, {
-        type: "line",
-        data: {
-          labels,
-          datasets: [{
-            label: "Макс вес (кг)",
-            data: maxWeights,
-            borderColor: getBlueColor(),
-            backgroundColor: "rgba(10, 132, 255, 0.14)",
-            borderWidth: 2,
-            tension: 0.25,
-            fill: true
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { labels: { color: "#8e8e93" } } },
-          scales: {
-            x: { ticks: { color: "#8e8e93" }, grid: { color: getGridColor() } },
-            y: { ticks: { color: "#8e8e93" }, grid: { color: getGridColor() } }
-          }
-        }
-      });
-    }
-
-    // СБОРКА ЭКРАНА СЕГОДНЯ
-    function updateUI() {
-      const today = dateKey(new Date());
-
-      const now = new Date();
-      document.getElementById("topDateStr").innerText = now.toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' });
-
-      // Вес в шапке
-      const lastM = data.measurements[data.measurements.length - 1];
-      document.getElementById("topWeightBadge").innerText = lastM && lastM.weight ? `${lastM.weight} кг` : "— кг";
-
-      // Фильтруем тренировку ТОЛЬКО на сегодняшний день
-      const todayEntries = data.entries.filter(e => dateKey(e.date) === today);
-      let vol = 0;
-      let totalSets = 0;
-      let doneSets = 0;
-
-      todayEntries.forEach(e => {
-        (e.setsData || []).forEach(s => {
-          totalSets++;
-          if (s.done) doneSets++;
-          vol += (Number(s.weight) || 0) * (Number(s.reps) || 0);
-        });
-      });
-
-      document.getElementById("sessionVolume").innerText = `${vol} кг · ${doneSets}/${totalSets}`;
-
-      const list = document.getElementById("todayList");
-      if (!todayEntries.length) {
-        list.innerHTML = `<p style="color: var(--label-secondary); font-size: 14px; text-align: center; padding: 22px 16px;">На сегодня план еще не добавлен.<br>Вставьте текст выше, чтобы начать.</p>`;
-        document.getElementById("clearDayBtnBox").style.display = "none";
-      } else {
-        document.getElementById("clearDayBtnBox").style.display = "block";
-        list.innerHTML = todayEntries.map((e, idx) => {
-          const sets = e.setsData || [];
-          const allDone = sets.length > 0 && sets.every(s => s.done);
-
-          const setsHtml = sets.map((s, sIdx) => `
-            <div class="set-row ${s.done ? 'completed' : ''}">
-              <div class="set-info">${sIdx + 1} подход: ${s.weight} кг × ${s.reps}</div>
-              <button class="ios-circle-check" onclick="toggleSetDone('${e.id}', ${sIdx})">
-                <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
-              </button>
-            </div>
-          `).join("");
-
-          return `
-            <div class="exercise-box">
-              <div class="exercise-head">
-                <div class="exercise-name">${idx + 1}. ${e.exercise}</div>
-                <div class="exercise-status">${allDone ? '✅ Сделано' : `${sets.filter(s=>s.done).length}/${sets.length}`}</div>
-              </div>
-              <div>${setsHtml}</div>
-            </div>
-          `;
-        }).join("");
-      }
-
-      updateExerciseSelect();
-      renderBodyCharts();
-    }
-
-    function switchTab(screenId, btn) {
-      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-      document.querySelectorAll(".tab-item").forEach(b => b.classList.remove("active"));
-      document.getElementById(`screen-${screenId}`).classList.add("active");
-      if (btn) btn.classList.add("active");
-
-      if (screenId === "measurements") setTimeout(renderBodyCharts, 40);
-      if (screenId === "analytics") setTimeout(renderExerciseChart, 40);
-    }
-
-    // ИМПОРТ / ЭКСПОРТ JSON
-    function exportDataJson() {
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `ironlog-backup.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    function importDataJson(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        try {
-          const parsed = JSON.parse(event.target.result);
-          if (Array.isArray(parsed.entries)) {
-            data = { ...defaultData(), ...parsed };
-            saveData();
-            alert("Данные успешно восстановлены!");
-          }
-        } catch (err) {
-          alert("Некорректный файл");
-        }
-      };
-      reader.readAsText(file);
-    }
-
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("./sw.js").catch(() => {});
-    }
-
-    initTheme();
-    document.getElementById("mDate").value = dateKey(new Date());
-    updateUI();
-    renderTimer();
-  </script>
+  <!-- Сюда в следующих блоках мы вставим логику JavaScript -->
 </body>
 </html>
+
+
