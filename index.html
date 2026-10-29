@@ -12,34 +12,32 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
-    /* ТЕМНАЯ ТЕМА В СТИЛЕ IOS */
+    /* ТЕМНАЯ ТЕМА APPLE */
     :root[data-theme="dark"] {
       --system-bg: #000000;
-      --group-bg: #1c1c1e;
-      --row-bg: #2c2c2e;
+      --card-bg: #1c1c1e;
+      --input-bg: #2c2c2e;
       --separator: rgba(255, 255, 255, 0.12);
       --label-primary: #ffffff;
       --label-secondary: #8e8e93;
-      --accent: #0a84ff; /* Благородный системный синий */
-      --accent-dim: rgba(10, 132, 255, 0.18);
+      --apple-blue: #0a84ff; /* Стандартный синий iOS для темной темы */
       --destructive: #ff453a;
-      --tab-bg: rgba(28, 28, 30, 0.88);
-      --switch-bg: #39393d;
+      --tab-bg: rgba(28, 28, 30, 0.92);
+      --switch-track: #39393d;
     }
 
-    /* СВЕТЛАЯ ТЕМА В ТОЧНОСТИ КАК НА ФОТО «НАСТРОЙКИ» */
+    /* СВЕТЛАЯ ТЕМА APPLE (КАК В «НАСТРОЙКАХ») */
     :root[data-theme="light"] {
-      --system-bg: #f2f2f7; /* Фон системных настроек */
-      --group-bg: #ffffff;  /* Белые скругленные плашки */
-      --row-bg: #f9f9fb;
+      --system-bg: #f2f2f7; /* Фон системных Настроек */
+      --card-bg: #ffffff;   /* Чистые белые плашки */
+      --input-bg: #f2f2f7;
       --separator: rgba(60, 60, 67, 0.15);
       --label-primary: #000000;
       --label-secondary: #8e8e93;
-      --accent: #007aff; /* Apple Blue */
-      --accent-dim: rgba(0, 122, 255, 0.12);
+      --apple-blue: #007aff; /* Стандартный синий iOS для светлой темы */
       --destructive: #ff3b30;
-      --tab-bg: rgba(249, 249, 249, 0.88);
-      --switch-bg: #e5e5ea;
+      --tab-bg: rgba(249, 249, 249, 0.92);
+      --switch-track: #e5e5ea;
     }
 
     * {
@@ -53,75 +51,65 @@
       background-color: var(--system-bg);
       color: var(--label-primary);
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", sans-serif;
-      padding: calc(env(safe-area-inset-top, 20px) + 8px) 16px calc(env(safe-area-inset-bottom, 20px) + 75px) 16px;
+      padding: calc(env(safe-area-inset-top, 20px) + 8px) 16px calc(env(safe-area-inset-bottom, 20px) + 80px) 16px;
       user-select: none;
       -webkit-user-select: none;
-      transition: background-color 0.2s;
+      transition: background-color 0.25s ease, color 0.25s ease;
     }
 
     /* ШАПКА */
     header {
+      padding: 8px 4px 14px;
+    }
+    .header-top-row {
       display: flex;
       justify-content: space-between;
-      align-items: flex-end;
-      padding: 10px 4px 16px;
+      align-items: center;
+      margin-bottom: 4px;
     }
-    .header-caption {
+    .header-date {
       font-size: 13px;
       font-weight: 600;
       color: var(--label-secondary);
       text-transform: uppercase;
       letter-spacing: -0.2px;
     }
-    .header-large-title {
+    .header-weight-pill {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--apple-blue);
+      background: rgba(10, 132, 255, 0.12);
+      padding: 4px 10px;
+      border-radius: 12px;
+    }
+    .header-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .header-title {
       font-size: 34px;
       font-weight: 800;
       letter-spacing: -0.6px;
-      line-height: 1.1;
     }
 
-    /* ПЛАШКИ В СТИЛЕ IOS INSET GROUPED */
-    .inset-group {
-      background: var(--group-bg);
-      border-radius: 16px;
-      margin-bottom: 18px;
-      overflow: hidden;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-    }
-    .group-header {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--label-secondary);
-      text-transform: uppercase;
-      letter-spacing: -0.1px;
-      padding: 0 16px 8px 16px;
+    /* ФИРМЕННЫЙ ТУМБЛЕР IOS (APPLE SWITCH) */
+    .theme-toggle-box {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-    }
-    .group-body {
-      padding: 14px 16px;
-    }
-
-    /* СИСТЕМНЫЙ ТУМБЛЕР (КАК «АВИАРЕЖИМ» НА ФОТО) */
-    .ios-switch-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 16px;
-      background: var(--group-bg);
+      gap: 8px;
     }
     .ios-switch {
       position: relative;
       width: 51px;
       height: 31px;
-      background: var(--switch-bg);
+      background: var(--switch-track);
       border-radius: 31px;
       cursor: pointer;
       transition: background 0.25s cubic-bezier(0.2, 0.85, 0.32, 1.2);
     }
     .ios-switch.active {
-      background: #34c759;
+      background: #34c759; /* Зеленый тумблер iOS во включенном состоянии */
     }
     .ios-switch-thumb {
       position: absolute;
@@ -131,15 +119,34 @@
       height: 27px;
       background: #ffffff;
       border-radius: 50%;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.18);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
       transition: transform 0.25s cubic-bezier(0.2, 0.85, 0.32, 1.2);
     }
     .ios-switch.active .ios-switch-thumb {
       transform: translateX(20px);
     }
 
+    /* ПЛАШКИ INSET GROUPED */
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      transition: background-color 0.25s ease;
+    }
+    .card-title {
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -0.4px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
     /* ПОЛЯ ВВОДА */
-    .input-grid {
+    .input-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
@@ -147,7 +154,7 @@
     }
     input, textarea, select {
       width: 100%;
-      background: var(--row-bg);
+      background: var(--input-bg);
       border: 0.5px solid var(--separator);
       color: var(--label-primary);
       border-radius: 10px;
@@ -161,10 +168,10 @@
       -webkit-appearance: none;
     }
 
-    /* КНОПКИ */
+    /* СТАНДАРТНАЯ СИНЯЯ КНОПКА APPLE */
     .btn {
       width: 100%;
-      background: var(--accent);
+      background: var(--apple-blue);
       color: #ffffff;
       border: none;
       border-radius: 12px;
@@ -175,51 +182,68 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      transition: opacity 0.15s ease;
     }
-    .btn:active { opacity: 0.75; transform: scale(0.99); }
-    .btn-secondary { background: var(--row-bg); color: var(--label-primary); border: 0.5px solid var(--separator); }
-    .btn-danger { background: rgba(255, 59, 48, 0.12); color: var(--destructive); }
+    .btn:active {
+      opacity: 0.75;
+      transform: scale(0.99);
+    }
+    .btn-secondary {
+      background: var(--input-bg);
+      color: var(--label-primary);
+      border: 0.5px solid var(--separator);
+    }
+    .btn-danger {
+      background: rgba(255, 59, 48, 0.12);
+      color: var(--destructive);
+    }
 
-    /* СПИСОК ПОДХОДОВ С РАЗДЕЛИТЕЛЯМИ IOS */
-    .exercise-title {
-      font-size: 17px;
-      font-weight: 600;
-      letter-spacing: -0.3px;
-      padding: 14px 16px 8px;
+    /* КАРТОЧКА УПРАЖНЕНИЯ И СТРОКИ ПОДХОДОВ */
+    .exercise-box {
+      background: var(--input-bg);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+    .exercise-head {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 8px;
     }
+    .exercise-name {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+    .exercise-status {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--label-secondary);
+    }
+
+    /* СТРОКА ПОДХОДА */
     .set-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 16px;
-      position: relative;
+      padding: 11px 0;
+      border-top: 0.5px solid var(--separator);
     }
-    .set-row:not(:last-child)::after {
-      content: "";
-      position: absolute;
-      bottom: 0;
-      left: 16px;
-      right: 0;
-      height: 0.5px;
-      background: var(--separator);
-    }
-    .set-text {
-      font-size: 16px;
+    .set-info {
+      font-size: 15px;
       font-weight: 500;
       font-variant-numeric: tabular-nums;
     }
-    .set-row.completed .set-text {
+    .set-row.completed .set-info {
       color: var(--label-secondary);
       text-decoration: line-through;
     }
 
-    /* КРУГЛЫЙ СИНИЙ ЧЕКБОКС */
-    .ios-check-circle {
-      width: 26px;
-      height: 26px;
+    /* СИНИЙ ЧЕКБОКС IOS */
+    .ios-circle-check {
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
       border: 2px solid var(--label-secondary);
       background: transparent;
@@ -227,28 +251,30 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: all 0.18s ease;
+      transition: all 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
     }
-    .ios-check-circle:active { transform: scale(0.85); }
-    .set-row.completed .ios-check-circle {
-      background: var(--accent);
-      border-color: var(--accent);
+    .ios-circle-check:active {
+      transform: scale(0.85);
     }
-    .ios-check-circle svg {
+    .set-row.completed .ios-circle-check {
+      background: var(--apple-blue);
+      border-color: var(--apple-blue);
+    }
+    .ios-circle-check svg {
       width: 14px;
       height: 14px;
       fill: none;
       stroke: #ffffff;
-      stroke-width: 3.2;
+      stroke-width: 3.4;
       stroke-linecap: round;
       stroke-linejoin: round;
       display: none;
     }
-    .set-row.completed .ios-check-circle svg {
+    .set-row.completed .ios-circle-check svg {
       display: block;
     }
 
-    /* НАВИГАЦИОННЫЙ ТАБ-БАР */
+    /* ТАБ-БАР */
     nav.tab-bar {
       position: fixed;
       bottom: 0;
@@ -264,7 +290,7 @@
       padding-top: 4px;
       z-index: 1000;
     }
-    .tab-btn {
+    .tab-item {
       background: none;
       border: none;
       color: var(--label-secondary);
@@ -276,164 +302,165 @@
       font-weight: 500;
       width: 25%;
     }
-    .tab-btn.active { color: var(--accent); font-weight: 600; }
-    .tab-icon { font-size: 20px; }
+    .tab-item.active {
+      color: var(--apple-blue);
+      font-weight: 600;
+    }
+    .tab-icon {
+      font-size: 20px;
+    }
 
     .screen { display: none; }
     .screen.active { display: block; }
     .timer-val {
       font-size: 64px;
       font-weight: 800;
-      color: var(--accent);
+      color: var(--apple-blue);
       text-align: center;
       font-variant-numeric: tabular-nums;
-      margin: 16px 0;
+      margin: 18px 0;
     }
-    .chart-box { position: relative; height: 220px; width: 100%; }
+    .chart-container { position: relative; height: 220px; width: 100%; }
   </style>
 </head>
+
+
 <body>
 
-  <!-- ШАПКА -->
+  <!-- ШАПКА С ТУМБЛЕРОМ -->
   <header>
-    <div>
-      <div class="header-caption" id="topDateStr">Четверг, 29 октября</div>
-      <div class="header-large-title">IRONLOG</div>
+    <div class="header-top-row">
+      <div class="header-date" id="topDateStr">Четверг, 29 октября</div>
+      <div class="header-weight-pill" id="topWeightBadge">82.0 кг</div>
+    </div>
+    <div class="header-title-row">
+      <div class="header-title">IRONLOG</div>
+      
+      <!-- СИСТЕМНЫЙ ТУМБЛЕР СВЕТЛАЯ / ТЕМНАЯ ТЕМА -->
+      <div class="theme-toggle-box" onclick="toggleTheme()">
+        <span style="font-size: 12px; font-weight: 600; color: var(--label-secondary);">ТЕМНАЯ</span>
+        <div class="ios-switch active" id="themeSwitch">
+          <div class="ios-switch-thumb"></div>
+        </div>
+      </div>
     </div>
   </header>
-
-  <!-- СТРОКА С ТУМБЛЕРОМ ТЕМЫ (ПО АНАЛОГИИ С СИСТЕМНЫМИ НАСТРОЙКАМИ) -->
-  <div class="inset-group" style="margin-bottom: 14px;">
-    <div class="ios-switch-row" onclick="toggleTheme()">
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <span style="font-size: 20px;">🌗</span>
-        <span style="font-size: 16px; font-weight: 500;">Темная тема</span>
-      </div>
-      <div class="ios-switch active" id="themeSwitch">
-        <div class="ios-switch-thumb"></div>
-      </div>
-    </div>
-  </div>
 
   <!-- ВКЛАДКА 1: СЕГОДНЯ -->
   <section id="screen-today" class="screen active">
     
-    <div class="group-header">Добавить тренировку</div>
-    <div class="inset-group">
-      <div class="group-body">
-        <textarea id="planInput" rows="3" placeholder="Вставьте текст: Жим 105 1/6, Присед 115 5/5..."></textarea>
-        <button class="btn" style="margin-top: 10px;" onclick="parseAndSavePlan()">Записать на сегодня</button>
+    <!-- ПОЛЕ ВСТАВКИ ТРЕНИРОВКИ -->
+    <div class="card">
+      <div class="card-title">Импорт тренировки</div>
+      <textarea id="planInput" rows="3" placeholder="Вставьте текст (например: Жим 105 1/6, Присед 115 5/5)..."></textarea>
+      <!-- СТАНДАРТНАЯ СИНЯЯ КНОПКА APPLE -->
+      <button class="btn" style="margin-top: 10px;" onclick="parseAndSavePlan()">Записать на сегодня</button>
+    </div>
+
+    <!-- ТРЕНИРОВКА ТЕКУЩЕГО ДНЯ С ЧЕКБОКСАМИ -->
+    <div class="card">
+      <div class="card-title">
+        <span>План на сегодня</span>
+        <span id="sessionVolume" style="font-size: 13px; color: var(--apple-blue); font-weight: 600;">0 кг</span>
       </div>
-    </div>
+      
+      <div id="todayList">
+        <!-- Упражнения с круглыми галочками -->
+      </div>
 
-    <div class="group-header">
-      <span>План на сегодня</span>
-      <span id="sessionVolume" style="color: var(--accent); font-weight: 600;">0 кг</span>
-    </div>
-    <div class="inset-group" id="todayGroup">
-      <div id="todayList"></div>
-    </div>
-
-    <div id="clearDayBtnBox" style="display: none; margin-bottom: 20px;">
-      <button class="btn btn-danger" onclick="clearToday()">Очистить день</button>
+      <div id="clearDayBtnBox" style="display: none; margin-top: 14px;">
+        <button class="btn btn-danger" onclick="clearToday()">Очистить день</button>
+      </div>
     </div>
   </section>
 
-  <!-- ВКЛАДКА 2: ТАЙМЕР -->
+  <!-- ВКЛАДКА 2: ТАЙМЕР ОТДЫХА -->
   <section id="screen-timer" class="screen">
-    <div class="group-header">Таймер между подходами</div>
-    <div class="inset-group">
-      <div class="group-body" style="text-align: center; padding: 24px 16px;">
-        <div class="timer-val" id="timerCount">01:30</div>
-        <div class="input-grid">
-          <button class="btn" id="timerStartBtn" onclick="toggleTimer()">Старт</button>
-          <button class="btn btn-secondary" onclick="resetTimer(90)">90 сек</button>
-        </div>
-        <div class="input-grid" style="margin-top: 8px;">
-          <button class="btn btn-secondary" onclick="addTimerSeconds(30)">+30 сек</button>
-          <button class="btn btn-secondary" onclick="resetTimer(120)">120 сек</button>
-        </div>
+    <div class="card" style="text-align: center; padding: 26px 16px;">
+      <div class="card-title" style="justify-content: center;">Таймер отдыха</div>
+      <div class="timer-val" id="timerCount">01:30</div>
+      <div class="input-row">
+        <button class="btn" id="timerStartBtn" onclick="toggleTimer()">Старт</button>
+        <button class="btn btn-secondary" onclick="resetTimer(90)">90 сек</button>
+      </div>
+      <div class="input-row" style="margin-top: 8px;">
+        <button class="btn btn-secondary" onclick="addTimerSeconds(30)">+30 сек</button>
+        <button class="btn btn-secondary" onclick="resetTimer(120)">120 сек</button>
       </div>
     </div>
   </section>
 
-  <!-- ВКЛАДКА 3: ЗАМЕРЫ -->
+  <!-- ВКЛАДКА 3: ЗАМЕРЫ ТЕЛА -->
   <section id="screen-measurements" class="screen">
-    <div class="group-header">Параметры тела</div>
-    <div class="inset-group">
-      <div class="group-body">
-        <div style="margin-bottom: 10px;">
-          <input type="date" id="mDate">
-        </div>
-        <div class="input-grid">
-          <input type="number" step="0.1" id="mWeight" placeholder="Вес (кг)">
-          <input type="number" step="0.5" id="mWaist" placeholder="Талия (см)">
-        </div>
-        <div class="input-grid">
-          <input type="number" step="0.5" id="mChest" placeholder="Грудная клетка (см)">
-          <input type="number" step="0.5" id="mThigh" placeholder="Бедро (см)">
-        </div>
-        <div style="margin-bottom: 10px;">
-          <input type="number" step="0.5" id="mArm" placeholder="Бицепс (см)">
-        </div>
-        <button class="btn" onclick="saveMeasurement()">Сохранить замер</button>
+    <div class="card">
+      <div class="card-title">Внести замер</div>
+      <div style="margin-bottom: 10px;">
+        <input type="date" id="mDate">
       </div>
+      <div class="input-row">
+        <input type="number" step="0.1" id="mWeight" placeholder="Вес тела (кг)">
+        <input type="number" step="0.5" id="mWaist" placeholder="Талия (см)">
+      </div>
+      <div class="input-row">
+        <input type="number" step="0.5" id="mChest" placeholder="Грудная клетка (см)">
+        <input type="number" step="0.5" id="mThigh" placeholder="Бедро (см)">
+      </div>
+      <div style="margin-bottom: 10px;">
+        <input type="number" step="0.5" id="mArm" placeholder="Обхват плеча / бицепс (см)">
+      </div>
+      <!-- СТАНДАРТНАЯ СИНЯЯ КНОПКА APPLE -->
+      <button class="btn" onclick="saveMeasurement()">Сохранить параметры</button>
     </div>
 
-    <div class="group-header">Динамика веса</div>
-    <div class="inset-group">
-      <div class="group-body">
-        <div class="chart-box">
-          <canvas id="chartWeight"></canvas>
-        </div>
+    <div class="card">
+      <div class="card-title">Динамика веса тела</div>
+      <div class="chart-container">
+        <canvas id="chartWeight"></canvas>
       </div>
     </div>
   </section>
 
   <!-- ВКЛАДКА 4: АНАЛИЗ И БЭКАП -->
   <section id="screen-analytics" class="screen">
-    <div class="group-header">Прогресс упражнения</div>
-    <div class="inset-group">
-      <div class="group-body">
-        <select id="exerciseSelect" onchange="renderExerciseChart()" style="margin-bottom: 12px;"></select>
-        <div class="chart-box">
-          <canvas id="chartExercise"></canvas>
-        </div>
+    <div class="card">
+      <div class="card-title">График прогресса (1ПМ)</div>
+      <select id="exerciseSelect" onchange="renderExerciseChart()" style="margin-bottom: 12px;"></select>
+      <div class="chart-container">
+        <canvas id="chartExercise"></canvas>
       </div>
     </div>
 
-    <div class="group-header">Резервная копия</div>
-    <div class="inset-group">
-      <div class="group-body">
-        <p style="color: var(--label-secondary); font-size: 13px; margin-bottom: 12px;">Сохраняйте резервную копию JSON в файлы устройства.</p>
-        <div class="input-grid">
-          <button class="btn btn-secondary" onclick="exportDataJson()">Экспорт JSON</button>
-          <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">Импорт JSON</button>
-        </div>
-        <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importDataJson(event)">
+    <div class="card">
+      <div class="card-title">Резервная копия данных</div>
+      <p style="color: var(--label-secondary); font-size: 13px; margin-bottom: 12px;">Сохраните JSON в «Файлы» (iCloud Drive), чтобы история всегда была под рукой.</p>
+      <div class="input-row">
+        <button class="btn btn-secondary" onclick="exportDataJson()">Скачать JSON</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">Восстановить</button>
       </div>
+      <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importDataJson(event)">
     </div>
   </section>
 
-  <!-- ТАБ-БАР -->
+  <!-- ТАБ-БАР В СТИЛЕ IOS -->
   <nav class="tab-bar">
-    <button class="tab-btn active" onclick="switchTab('today', this)">
+    <button class="tab-item active" onclick="switchTab('today', this)">
       <span class="tab-icon">🏋️</span>Сегодня
     </button>
-    <button class="tab-btn" onclick="switchTab('timer', this)">
+    <button class="tab-item" onclick="switchTab('timer', this)">
       <span class="tab-icon">⏱</span>Таймер
     </button>
-    <button class="tab-btn" onclick="switchTab('measurements', this)">
+    <button class="tab-item" onclick="switchTab('measurements', this)">
       <span class="tab-icon">⚖️</span>Замеры
     </button>
-    <button class="tab-btn" onclick="switchTab('analytics', this)">
+    <button class="tab-item" onclick="switchTab('analytics', this)">
       <span class="tab-icon">📊</span>Анализ
     </button>
   </nav>
 
+
   <script>
     const STORAGE_KEY = "ironlog_db_v1";
-    const THEME_KEY = "ironlog_theme_v1";
+    const THEME_KEY = "ironlog_theme_v2";
 
     function defaultData() {
       return { unit: "кг", entries: [], measurements: [] };
@@ -463,30 +490,36 @@
       ].join("-");
     }
 
-    // ТУМБЛЕР ТЕМЫ
+    // ТУМБЛЕР СВЕТЛАЯ / ТЕМНАЯ ТЕМА
     function initTheme() {
-      const saved = localStorage.getItem(THEME_KEY) || "dark";
-      document.documentElement.setAttribute("data-theme", saved);
+      const savedTheme = localStorage.getItem(THEME_KEY) || "dark";
+      document.documentElement.setAttribute("data-theme", savedTheme);
       const sw = document.getElementById("themeSwitch");
-      if (saved === "dark") sw.classList.add("active");
-      else sw.classList.remove("active");
+      if (savedTheme === "dark") {
+        sw.classList.add("active");
+      } else {
+        sw.classList.remove("active");
+      }
     }
 
     function toggleTheme() {
-      const cur = document.documentElement.getAttribute("data-theme") || "dark";
-      const next = cur === "dark" ? "light" : "dark";
+      const current = document.documentElement.getAttribute("data-theme") || "dark";
+      const next = current === "dark" ? "light" : "dark";
       document.documentElement.setAttribute("data-theme", next);
       localStorage.setItem(THEME_KEY, next);
       
       const sw = document.getElementById("themeSwitch");
-      if (next === "dark") sw.classList.add("active");
-      else sw.classList.remove("active");
+      if (next === "dark") {
+        sw.classList.add("active");
+      } else {
+        sw.classList.remove("active");
+      }
 
       renderBodyCharts();
       renderExerciseChart();
     }
 
-    // ПАРСЕР ТЕКСТА IRONLOG 8.1
+    // ПАРСЕР ТЕКСТА
     function parseSingleItem(rawContent) {
       let text = String(rawContent || "").trim()
         .replace(/^\s*[-*•]\s*/, "")
@@ -568,7 +601,7 @@
       saveData();
     }
 
-    // ТАП НА СИНИЙ ЧЕКБОКС
+    // ТАП НА СИНИЙ ЧЕКБОКС ПОДХОДА + ВИБРО И АВТОТАЙМЕР
     function toggleSetDone(entryId, setIndex) {
       const entry = data.entries.find(e => e.id === entryId);
       if (!entry || !entry.setsData[setIndex]) return;
@@ -580,7 +613,7 @@
       if (isDone) {
         if (navigator.vibrate) navigator.vibrate(35);
         resetTimer(90);
-        toggleTimer();
+        toggleTimer(); // автостарт 90 сек отдыха
       }
     }
 
@@ -591,7 +624,8 @@
       saveData();
     }
 
-    // ТАЙМЕР ОТДЫХА
+
+    // МОДУЛЬ ТАЙМЕРА
     let timerInterval = null;
     let timerSec = 90;
 
@@ -665,7 +699,7 @@
       alert("Параметры зафиксированы!");
     }
 
-    // ГРАФИКИ
+    // ГРАФИКИ CHART.JS С АДАПТАЦИЕЙ ПОД ТЕМУ
     let weightChartInstance = null;
     let exerciseChartInstance = null;
 
@@ -675,7 +709,7 @@
         : "rgba(255, 255, 255, 0.08)";
     }
 
-    function getAccentColor() {
+    function getBlueColor() {
       return document.documentElement.getAttribute("data-theme") === "light" ? "#007aff" : "#0a84ff";
     }
 
@@ -692,13 +726,13 @@
           labels,
           datasets: [{
             data: weights,
-            borderColor: getAccentColor(),
+            borderColor: getBlueColor(),
             backgroundColor: "rgba(10, 132, 255, 0.12)",
             borderWidth: 2.5,
             tension: 0.3,
             fill: true,
             pointRadius: 4,
-            pointBackgroundColor: getAccentColor()
+            pointBackgroundColor: getBlueColor()
           }]
         },
         options: {
@@ -740,7 +774,7 @@
           datasets: [{
             label: "Макс вес (кг)",
             data: maxWeights,
-            borderColor: getAccentColor(),
+            borderColor: getBlueColor(),
             backgroundColor: "rgba(10, 132, 255, 0.14)",
             borderWidth: 2,
             tension: 0.25,
@@ -759,14 +793,18 @@
       });
     }
 
-    // СБОРКА ИНТЕРФЕЙСА СЕГОДНЯШНЕГО ДНЯ
+    // СБОРКА ЭКРАНА СЕГОДНЯ
     function updateUI() {
       const today = dateKey(new Date());
 
       const now = new Date();
       document.getElementById("topDateStr").innerText = now.toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' });
 
-      // Показываем тренировку ТОЛЬКО на сегодня
+      // Вес в шапке
+      const lastM = data.measurements[data.measurements.length - 1];
+      document.getElementById("topWeightBadge").innerText = lastM && lastM.weight ? `${lastM.weight} кг` : "— кг";
+
+      // Фильтруем тренировку ТОЛЬКО на сегодняшний день
       const todayEntries = data.entries.filter(e => dateKey(e.date) === today);
       let vol = 0;
       let totalSets = 0;
@@ -794,18 +832,18 @@
 
           const setsHtml = sets.map((s, sIdx) => `
             <div class="set-row ${s.done ? 'completed' : ''}">
-              <div class="set-text">${sIdx + 1} подход: ${s.weight} кг × ${s.reps}</div>
-              <button class="ios-check-circle" onclick="toggleSetDone('${e.id}', ${sIdx})">
+              <div class="set-info">${sIdx + 1} подход: ${s.weight} кг × ${s.reps}</div>
+              <button class="ios-circle-check" onclick="toggleSetDone('${e.id}', ${sIdx})">
                 <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
               </button>
             </div>
           `).join("");
 
           return `
-            <div>
-              <div class="exercise-title">
-                <span>${idx + 1}. ${e.exercise}</span>
-                <span style="font-size: 13px; color: var(--label-secondary);">${allDone ? '✅ Сделано' : `${sets.filter(s=>s.done).length}/${sets.length}`}</span>
+            <div class="exercise-box">
+              <div class="exercise-head">
+                <div class="exercise-name">${idx + 1}. ${e.exercise}</div>
+                <div class="exercise-status">${allDone ? '✅ Сделано' : `${sets.filter(s=>s.done).length}/${sets.length}`}</div>
               </div>
               <div>${setsHtml}</div>
             </div>
@@ -819,7 +857,7 @@
 
     function switchTab(screenId, btn) {
       document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".tab-item").forEach(b => b.classList.remove("active"));
       document.getElementById(`screen-${screenId}`).classList.add("active");
       if (btn) btn.classList.add("active");
 
@@ -827,6 +865,7 @@
       if (screenId === "analytics") setTimeout(renderExerciseChart, 40);
     }
 
+    // ИМПОРТ / ЭКСПОРТ JSON
     function exportDataJson() {
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
@@ -847,7 +886,7 @@
           if (Array.isArray(parsed.entries)) {
             data = { ...defaultData(), ...parsed };
             saveData();
-            alert("Данные успешно импортированы!");
+            alert("Данные успешно восстановлены!");
           }
         } catch (err) {
           alert("Некорректный файл");
