@@ -8,39 +8,37 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="IRONLOG">
-  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='115' fill='%23000000'/><path d='M130 256h252M165 185v142M347 185v142M205 205v102M307 205v102' stroke='%2334c759' stroke-width='32' stroke-linecap='round'/></svg>">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='115' fill='%23007aff'/><path d='M140 256h232M170 190v132M342 190v132M205 210v92M307 210v92' stroke='%23ffffff' stroke-width='34' stroke-linecap='round'/></svg>">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
-    /* ТЕМНАЯ ТЕМА (ПО УМОЛЧАНИЮ) */
+    /* ТЕМНАЯ ТЕМА В СТИЛЕ IOS */
     :root[data-theme="dark"] {
-      --bg: #000000;
-      --card: #1c1c1e;
-      --card-inner: #2c2c2e;
+      --system-bg: #000000;
+      --group-bg: #1c1c1e;
+      --row-bg: #2c2c2e;
       --separator: rgba(255, 255, 255, 0.12);
-      --text: #ffffff;
-      --text-sec: #8e8e93;
-      --accent: #34c759;
-      --accent-tint: rgba(52, 199, 89, 0.18);
-      --danger: #ff453a;
-      --tab-bg: rgba(28, 28, 30, 0.85);
-      --bar-border: rgba(255, 255, 255, 0.15);
+      --label-primary: #ffffff;
+      --label-secondary: #8e8e93;
+      --accent: #0a84ff; /* Благородный системный синий */
+      --accent-dim: rgba(10, 132, 255, 0.18);
+      --destructive: #ff453a;
+      --tab-bg: rgba(28, 28, 30, 0.88);
       --switch-bg: #39393d;
     }
 
-    /* СВЕТЛАЯ ТЕМА В СТИЛЕ IOS */
+    /* СВЕТЛАЯ ТЕМА В ТОЧНОСТИ КАК НА ФОТО «НАСТРОЙКИ» */
     :root[data-theme="light"] {
-      --bg: #f2f2f7;
-      --card: #ffffff;
-      --card-inner: #f9f9fb;
-      --separator: rgba(60, 60, 67, 0.12);
-      --text: #000000;
-      --text-sec: #8e8e93;
-      --accent: #34c759;
-      --accent-tint: rgba(52, 199, 89, 0.14);
-      --danger: #ff3b30;
-      --tab-bg: rgba(249, 249, 249, 0.85);
-      --bar-border: rgba(60, 60, 67, 0.2);
+      --system-bg: #f2f2f7; /* Фон системных настроек */
+      --group-bg: #ffffff;  /* Белые скругленные плашки */
+      --row-bg: #f9f9fb;
+      --separator: rgba(60, 60, 67, 0.15);
+      --label-primary: #000000;
+      --label-secondary: #8e8e93;
+      --accent: #007aff; /* Apple Blue */
+      --accent-dim: rgba(0, 122, 255, 0.12);
+      --destructive: #ff3b30;
+      --tab-bg: rgba(249, 249, 249, 0.88);
       --switch-bg: #e5e5ea;
     }
 
@@ -52,41 +50,66 @@
     }
 
     body {
-      background-color: var(--bg);
-      color: var(--text);
+      background-color: var(--system-bg);
+      color: var(--label-primary);
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", sans-serif;
-      padding: calc(env(safe-area-inset-top, 20px) + 8px) 16px calc(env(safe-area-inset-bottom, 20px) + 85px) 16px;
+      padding: calc(env(safe-area-inset-top, 20px) + 8px) 16px calc(env(safe-area-inset-bottom, 20px) + 75px) 16px;
       user-select: none;
       -webkit-user-select: none;
-      transition: background-color 0.25s, color 0.25s;
+      transition: background-color 0.2s;
     }
 
-    /* ШАПКА IOS */
+    /* ШАПКА */
     header {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      padding: 8px 0 16px;
+      align-items: flex-end;
+      padding: 10px 4px 16px;
     }
-    .header-sub {
+    .header-caption {
       font-size: 13px;
       font-weight: 600;
-      color: var(--text-sec);
+      color: var(--label-secondary);
       text-transform: uppercase;
       letter-spacing: -0.2px;
     }
-    .header-title {
-      font-size: 32px;
+    .header-large-title {
+      font-size: 34px;
       font-weight: 800;
-      letter-spacing: -0.5px;
-      color: var(--text);
+      letter-spacing: -0.6px;
+      line-height: 1.1;
     }
 
-    /* ТУМБЛЕР ТЕМЫ (IOS SWITCH) */
-    .theme-switch-wrapper {
+    /* ПЛАШКИ В СТИЛЕ IOS INSET GROUPED */
+    .inset-group {
+      background: var(--group-bg);
+      border-radius: 16px;
+      margin-bottom: 18px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+    .group-header {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--label-secondary);
+      text-transform: uppercase;
+      letter-spacing: -0.1px;
+      padding: 0 16px 8px 16px;
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 8px;
+    }
+    .group-body {
+      padding: 14px 16px;
+    }
+
+    /* СИСТЕМНЫЙ ТУМБЛЕР (КАК «АВИАРЕЖИМ» НА ФОТО) */
+    .ios-switch-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: var(--group-bg);
     }
     .ios-switch {
       position: relative;
@@ -95,12 +118,12 @@
       background: var(--switch-bg);
       border-radius: 31px;
       cursor: pointer;
-      transition: background 0.25s;
+      transition: background 0.25s cubic-bezier(0.2, 0.85, 0.32, 1.2);
     }
     .ios-switch.active {
-      background: var(--accent);
+      background: #34c759;
     }
-    .ios-switch-knob {
+    .ios-switch-thumb {
       position: absolute;
       top: 2px;
       left: 2px;
@@ -108,34 +131,15 @@
       height: 27px;
       background: #ffffff;
       border-radius: 50%;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.18);
       transition: transform 0.25s cubic-bezier(0.2, 0.85, 0.32, 1.2);
     }
-    .ios-switch.active .ios-switch-knob {
+    .ios-switch.active .ios-switch-thumb {
       transform: translateX(20px);
     }
 
-    /* КАРТОЧКИ (INSET GROUPED) */
-    .card {
-      background: var(--card);
-      border-radius: 14px;
-      padding: 16px;
-      margin-bottom: 14px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-      transition: background 0.25s;
-    }
-    .card-title {
-      font-size: 17px;
-      font-weight: 600;
-      letter-spacing: -0.4px;
-      margin-bottom: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    /* ПОЛЯ ВВОДА IOS */
-    .input-row {
+    /* ПОЛЯ ВВОДА */
+    .input-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
@@ -143,9 +147,9 @@
     }
     input, textarea, select {
       width: 100%;
-      background: var(--card-inner);
+      background: var(--row-bg);
       border: 0.5px solid var(--separator);
-      color: var(--text);
+      color: var(--label-primary);
       border-radius: 10px;
       padding: 12px 14px;
       font-size: 16px;
@@ -171,92 +175,80 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 6px;
     }
     .btn:active { opacity: 0.75; transform: scale(0.99); }
-    .btn-secondary { background: var(--card-inner); color: var(--text); border: 0.5px solid var(--separator); }
-    .btn-danger { background: rgba(255, 69, 58, 0.15); color: var(--danger); }
+    .btn-secondary { background: var(--row-bg); color: var(--label-primary); border: 0.5px solid var(--separator); }
+    .btn-danger { background: rgba(255, 59, 48, 0.12); color: var(--destructive); }
 
-    /* СПИСОК УПРАЖНЕНИЙ И ПОДХОДОВ */
-    .exercise-block {
-      background: var(--card-inner);
-      border-radius: 12px;
-      padding: 14px 16px;
-      margin-bottom: 12px;
-    }
-    .exercise-title-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-    .exercise-name {
-      font-size: 16px;
-      font-weight: 700;
-      letter-spacing: -0.3px;
-    }
-    .exercise-badge {
-      font-size: 12px;
+    /* СПИСОК ПОДХОДОВ С РАЗДЕЛИТЕЛЯМИ IOS */
+    .exercise-title {
+      font-size: 17px;
       font-weight: 600;
-      color: var(--text-sec);
-    }
-    
-    /* СТРОКА ПОДХОДА С КРУГЛЫМ ЧЕКБОКСОМ */
-    .set-item {
+      letter-spacing: -0.3px;
+      padding: 14px 16px 8px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 11px 0;
-      border-top: 0.5px solid var(--separator);
     }
-    .set-desc {
-      font-size: 15px;
+    .set-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      position: relative;
+    }
+    .set-row:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 16px;
+      right: 0;
+      height: 0.5px;
+      background: var(--separator);
+    }
+    .set-text {
+      font-size: 16px;
       font-weight: 500;
       font-variant-numeric: tabular-nums;
     }
-    .set-item.completed .set-desc {
-      color: var(--text-sec);
+    .set-row.completed .set-text {
+      color: var(--label-secondary);
       text-decoration: line-through;
     }
 
-    /* НАСТОЯЩИЙ ЧЕКБОКС IOS REMINDERS */
-    .ios-checkbox {
-      width: 28px;
-      height: 28px;
+    /* КРУГЛЫЙ СИНИЙ ЧЕКБОКС */
+    .ios-check-circle {
+      width: 26px;
+      height: 26px;
       border-radius: 50%;
-      border: 2px solid var(--text-sec);
+      border: 2px solid var(--label-secondary);
       background: transparent;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+      transition: all 0.18s ease;
     }
-    .ios-checkbox:active {
-      transform: scale(0.85);
-    }
-    .set-item.completed .ios-checkbox {
+    .ios-check-circle:active { transform: scale(0.85); }
+    .set-row.completed .ios-check-circle {
       background: var(--accent);
       border-color: var(--accent);
     }
-    .ios-checkbox svg {
+    .ios-check-circle svg {
       width: 14px;
       height: 14px;
       fill: none;
       stroke: #ffffff;
-      stroke-width: 3.5;
+      stroke-width: 3.2;
       stroke-linecap: round;
       stroke-linejoin: round;
-      opacity: 0;
-      transform: scale(0.5);
-      transition: all 0.2s;
+      display: none;
     }
-    .set-item.completed .ios-checkbox svg {
-      opacity: 1;
-      transform: scale(1);
+    .set-row.completed .ios-check-circle svg {
+      display: block;
     }
 
-    /* ТАБ-БАР В СТИЛЕ IOS */
+    /* НАВИГАЦИОННЫЙ ТАБ-БАР */
     nav.tab-bar {
       position: fixed;
       bottom: 0;
@@ -266,16 +258,16 @@
       background: var(--tab-bg);
       backdrop-filter: blur(25px);
       -webkit-backdrop-filter: blur(25px);
-      border-top: 0.5px solid var(--bar-border);
+      border-top: 0.5px solid var(--separator);
       display: flex;
       justify-content: space-around;
       padding-top: 4px;
-      z-index: 999;
+      z-index: 1000;
     }
     .tab-btn {
       background: none;
       border: none;
-      color: var(--text-sec);
+      color: var(--label-secondary);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -284,7 +276,7 @@
       font-weight: 500;
       width: 25%;
     }
-    .tab-btn.active { color: var(--accent); }
+    .tab-btn.active { color: var(--accent); font-weight: 600; }
     .tab-icon { font-size: 20px; }
 
     .screen { display: none; }
@@ -295,124 +287,135 @@
       color: var(--accent);
       text-align: center;
       font-variant-numeric: tabular-nums;
-      margin: 18px 0;
+      margin: 16px 0;
     }
     .chart-box { position: relative; height: 220px; width: 100%; }
   </style>
 </head>
-
-
 <body>
 
-  <!-- ШАПКА С ТУМБЛЕРОМ -->
+  <!-- ШАПКА -->
   <header>
     <div>
-      <div class="header-sub" id="topDateLabel">Тренировка</div>
-      <div class="header-title">IRONLOG</div>
-    </div>
-    <div class="theme-switch-wrapper" onclick="toggleTheme()">
-      <span style="font-size: 13px; font-weight: 600; color: var(--text-sec);">☀️</span>
-      <div class="ios-switch active" id="themeSwitch">
-        <div class="ios-switch-knob"></div>
-      </div>
-      <span style="font-size: 13px; font-weight: 600; color: var(--text-sec);">🌙</span>
+      <div class="header-caption" id="topDateStr">Четверг, 29 октября</div>
+      <div class="header-large-title">IRONLOG</div>
     </div>
   </header>
+
+  <!-- СТРОКА С ТУМБЛЕРОМ ТЕМЫ (ПО АНАЛОГИИ С СИСТЕМНЫМИ НАСТРОЙКАМИ) -->
+  <div class="inset-group" style="margin-bottom: 14px;">
+    <div class="ios-switch-row" onclick="toggleTheme()">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span style="font-size: 20px;">🌗</span>
+        <span style="font-size: 16px; font-weight: 500;">Темная тема</span>
+      </div>
+      <div class="ios-switch active" id="themeSwitch">
+        <div class="ios-switch-thumb"></div>
+      </div>
+    </div>
+  </div>
 
   <!-- ВКЛАДКА 1: СЕГОДНЯ -->
   <section id="screen-today" class="screen active">
     
-    <!-- ПОЛЕ ВСТАВКИ -->
-    <div class="card">
-      <div class="card-title">Импорт тренировки</div>
-      <textarea id="planInput" rows="3" placeholder="Вставьте текст (например: Жим 105 1/6, Присед 115 5/5)..."></textarea>
-      <button class="btn" style="margin-top: 10px;" onclick="parseAndSavePlan()">Записать на сегодня</button>
+    <div class="group-header">Добавить тренировку</div>
+    <div class="inset-group">
+      <div class="group-body">
+        <textarea id="planInput" rows="3" placeholder="Вставьте текст: Жим 105 1/6, Присед 115 5/5..."></textarea>
+        <button class="btn" style="margin-top: 10px;" onclick="parseAndSavePlan()">Записать на сегодня</button>
+      </div>
     </div>
 
-    <!-- СПИСОК УПРАЖНЕНИЙ С ГАЛОЧКАМИ ПОДХОДОВ -->
-    <div class="card">
-      <div class="card-title">
-        <span>План на сегодня</span>
-        <span id="sessionVolume" style="font-size: 13px; color: var(--accent);">0 кг</span>
-      </div>
-      
-      <div id="todayList">
-        <!-- Сюда добавляются упражнения с круглыми галочками -->
-      </div>
+    <div class="group-header">
+      <span>План на сегодня</span>
+      <span id="sessionVolume" style="color: var(--accent); font-weight: 600;">0 кг</span>
+    </div>
+    <div class="inset-group" id="todayGroup">
+      <div id="todayList"></div>
+    </div>
 
-      <div id="clearDayBtnBox" style="display: none; margin-top: 14px;">
-        <button class="btn btn-danger" onclick="clearToday()">Очистить день</button>
-      </div>
+    <div id="clearDayBtnBox" style="display: none; margin-bottom: 20px;">
+      <button class="btn btn-danger" onclick="clearToday()">Очистить день</button>
     </div>
   </section>
 
-  <!-- ВКЛАДКА 2: ТАЙМЕР ОТДЫХА -->
+  <!-- ВКЛАДКА 2: ТАЙМЕР -->
   <section id="screen-timer" class="screen">
-    <div class="card" style="text-align: center; padding: 26px 16px;">
-      <div class="card-title" style="justify-content: center;">Таймер отдыха</div>
-      <div class="timer-val" id="timerCount">01:30</div>
-      <div class="input-row">
-        <button class="btn" id="timerStartBtn" onclick="toggleTimer()">Старт</button>
-        <button class="btn btn-secondary" onclick="resetTimer(90)">90 сек</button>
-      </div>
-      <div class="input-row" style="margin-top: 8px;">
-        <button class="btn btn-secondary" onclick="addTimerSeconds(30)">+30 сек</button>
-        <button class="btn btn-secondary" onclick="resetTimer(120)">120 сек</button>
+    <div class="group-header">Таймер между подходами</div>
+    <div class="inset-group">
+      <div class="group-body" style="text-align: center; padding: 24px 16px;">
+        <div class="timer-val" id="timerCount">01:30</div>
+        <div class="input-grid">
+          <button class="btn" id="timerStartBtn" onclick="toggleTimer()">Старт</button>
+          <button class="btn btn-secondary" onclick="resetTimer(90)">90 сек</button>
+        </div>
+        <div class="input-grid" style="margin-top: 8px;">
+          <button class="btn btn-secondary" onclick="addTimerSeconds(30)">+30 сек</button>
+          <button class="btn btn-secondary" onclick="resetTimer(120)">120 сек</button>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- ВКЛАДКА 3: ЗАМЕРЫ -->
   <section id="screen-measurements" class="screen">
-    <div class="card">
-      <div class="card-title">Внести замер</div>
-      <div style="margin-bottom: 10px;">
-        <input type="date" id="mDate">
+    <div class="group-header">Параметры тела</div>
+    <div class="inset-group">
+      <div class="group-body">
+        <div style="margin-bottom: 10px;">
+          <input type="date" id="mDate">
+        </div>
+        <div class="input-grid">
+          <input type="number" step="0.1" id="mWeight" placeholder="Вес (кг)">
+          <input type="number" step="0.5" id="mWaist" placeholder="Талия (см)">
+        </div>
+        <div class="input-grid">
+          <input type="number" step="0.5" id="mChest" placeholder="Грудная клетка (см)">
+          <input type="number" step="0.5" id="mThigh" placeholder="Бедро (см)">
+        </div>
+        <div style="margin-bottom: 10px;">
+          <input type="number" step="0.5" id="mArm" placeholder="Бицепс (см)">
+        </div>
+        <button class="btn" onclick="saveMeasurement()">Сохранить замер</button>
       </div>
-      <div class="input-row">
-        <input type="number" step="0.1" id="mWeight" placeholder="Вес (кг)">
-        <input type="number" step="0.5" id="mWaist" placeholder="Талия (см)">
-      </div>
-      <div class="input-row">
-        <input type="number" step="0.5" id="mChest" placeholder="Грудь (см)">
-        <input type="number" step="0.5" id="mThigh" placeholder="Бедро (см)">
-      </div>
-      <div style="margin-bottom: 10px;">
-        <input type="number" step="0.5" id="mArm" placeholder="Бицепс (см)">
-      </div>
-      <button class="btn" onclick="saveMeasurement()">Сохранить замер</button>
     </div>
 
-    <div class="card">
-      <div class="card-title">График веса тела</div>
-      <div class="chart-box">
-        <canvas id="chartWeight"></canvas>
+    <div class="group-header">Динамика веса</div>
+    <div class="inset-group">
+      <div class="group-body">
+        <div class="chart-box">
+          <canvas id="chartWeight"></canvas>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- ВКЛАДКА 4: АНАЛИЗ И БЭКАП -->
   <section id="screen-analytics" class="screen">
-    <div class="card">
-      <div class="card-title">График прогресса (1ПМ)</div>
-      <select id="exerciseSelect" onchange="renderExerciseChart()" style="margin-bottom: 12px;"></select>
-      <div class="chart-box">
-        <canvas id="chartExercise"></canvas>
+    <div class="group-header">Прогресс упражнения</div>
+    <div class="inset-group">
+      <div class="group-body">
+        <select id="exerciseSelect" onchange="renderExerciseChart()" style="margin-bottom: 12px;"></select>
+        <div class="chart-box">
+          <canvas id="chartExercise"></canvas>
+        </div>
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-title">Резервная копия данных</div>
-      <p style="color: var(--text-sec); font-size: 13px; margin-bottom: 12px;">Сохраните JSON в «Файлы» (iCloud Drive), чтобы не потерять историю.</p>
-      <div class="input-row">
-        <button class="btn btn-secondary" onclick="exportDataJson()">Скачать JSON</button>
-        <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">Восстановить</button>
+    <div class="group-header">Резервная копия</div>
+    <div class="inset-group">
+      <div class="group-body">
+        <p style="color: var(--label-secondary); font-size: 13px; margin-bottom: 12px;">Сохраняйте резервную копию JSON в файлы устройства.</p>
+        <div class="input-grid">
+          <button class="btn btn-secondary" onclick="exportDataJson()">Экспорт JSON</button>
+          <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">Импорт JSON</button>
+        </div>
+        <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importDataJson(event)">
       </div>
-      <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importDataJson(event)">
     </div>
   </section>
 
-  <!-- ТАБ-БАР IOS -->
+  <!-- ТАБ-БАР -->
   <nav class="tab-bar">
     <button class="tab-btn active" onclick="switchTab('today', this)">
       <span class="tab-icon">🏋️</span>Сегодня
@@ -427,7 +430,6 @@
       <span class="tab-icon">📊</span>Анализ
     </button>
   </nav>
-
 
   <script>
     const STORAGE_KEY = "ironlog_db_v1";
@@ -463,16 +465,16 @@
 
     // ТУМБЛЕР ТЕМЫ
     function initTheme() {
-      const savedTheme = localStorage.getItem(THEME_KEY) || "dark";
-      document.documentElement.setAttribute("data-theme", savedTheme);
+      const saved = localStorage.getItem(THEME_KEY) || "dark";
+      document.documentElement.setAttribute("data-theme", saved);
       const sw = document.getElementById("themeSwitch");
-      if (savedTheme === "dark") sw.classList.add("active");
+      if (saved === "dark") sw.classList.add("active");
       else sw.classList.remove("active");
     }
 
     function toggleTheme() {
-      const current = document.documentElement.getAttribute("data-theme") || "dark";
-      const next = current === "dark" ? "light" : "dark";
+      const cur = document.documentElement.getAttribute("data-theme") || "dark";
+      const next = cur === "dark" ? "light" : "dark";
       document.documentElement.setAttribute("data-theme", next);
       localStorage.setItem(THEME_KEY, next);
       
@@ -480,12 +482,11 @@
       if (next === "dark") sw.classList.add("active");
       else sw.classList.remove("active");
 
-      // Обновляем графики под новую тему
       renderBodyCharts();
       renderExerciseChart();
     }
 
-    // ПАРСЕР ТЕКСТА
+    // ПАРСЕР ТЕКСТА IRONLOG 8.1
     function parseSingleItem(rawContent) {
       let text = String(rawContent || "").trim()
         .replace(/^\s*[-*•]\s*/, "")
@@ -544,7 +545,7 @@
       return null;
     }
 
-    // ЗАПИСЬ ПЛАНА (СТРОГО НА ТЕКУЩИЙ ДЕНЬ)
+    // ИМПОРТ ПЛАНА НА ТЕКУЩИЙ ДЕНЬ
     function parseAndSavePlan() {
       const input = document.getElementById("planInput").value.trim();
       if (!input) return;
@@ -567,7 +568,7 @@
       saveData();
     }
 
-    // ТАП НА КРУГЛУЮ ГАЛОЧКУ ПОДХОДА + ВИБРООТКЛИК И АВТОТАЙМЕР
+    // ТАП НА СИНИЙ ЧЕКБОКС
     function toggleSetDone(entryId, setIndex) {
       const entry = data.entries.find(e => e.id === entryId);
       if (!entry || !entry.setsData[setIndex]) return;
@@ -577,9 +578,9 @@
       saveData();
 
       if (isDone) {
-        if (navigator.vibrate) navigator.vibrate(35); // легкий щелчок Taptic Engine
+        if (navigator.vibrate) navigator.vibrate(35);
         resetTimer(90);
-        toggleTimer(); // автостарт 90 сек отдыха
+        toggleTimer();
       }
     }
 
@@ -590,8 +591,7 @@
       saveData();
     }
 
-
-    // ТАЙМЕР
+    // ТАЙМЕР ОТДЫХА
     let timerInterval = null;
     let timerSec = 90;
 
@@ -625,10 +625,7 @@
     }
 
     function resetTimer(sec) {
-      if (timerInterval) {
-        clearInterval(timerInterval);
-        timerInterval = null;
-      }
+      if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
       timerSec = sec;
       document.getElementById("timerStartBtn").innerText = "Старт";
       renderTimer();
@@ -660,25 +657,26 @@
         weight, waist, chest, thigh, arm
       };
 
-      if (existingIdx !== -1) {
-        data.measurements[existingIdx] = record;
-      } else {
-        data.measurements.push(record);
-      }
+      if (existingIdx !== -1) data.measurements[existingIdx] = record;
+      else data.measurements.push(record);
 
       data.measurements.sort((a, b) => new Date(a.date) - new Date(b.date));
       saveData();
       alert("Параметры зафиксированы!");
     }
 
-    // ГРАФИКИ С АДАПТАЦИЕЙ ПОД ТЕМУ
+    // ГРАФИКИ
     let weightChartInstance = null;
     let exerciseChartInstance = null;
 
     function getGridColor() {
       return document.documentElement.getAttribute("data-theme") === "light" 
-        ? "rgba(60, 60, 67, 0.1)" 
+        ? "rgba(60, 60, 67, 0.12)" 
         : "rgba(255, 255, 255, 0.08)";
+    }
+
+    function getAccentColor() {
+      return document.documentElement.getAttribute("data-theme") === "light" ? "#007aff" : "#0a84ff";
     }
 
     function renderBodyCharts() {
@@ -694,13 +692,13 @@
           labels,
           datasets: [{
             data: weights,
-            borderColor: "#34c759",
-            backgroundColor: "rgba(52, 199, 89, 0.14)",
+            borderColor: getAccentColor(),
+            backgroundColor: "rgba(10, 132, 255, 0.12)",
             borderWidth: 2.5,
             tension: 0.3,
             fill: true,
             pointRadius: 4,
-            pointBackgroundColor: "#34c759"
+            pointBackgroundColor: getAccentColor()
           }]
         },
         options: {
@@ -742,8 +740,8 @@
           datasets: [{
             label: "Макс вес (кг)",
             data: maxWeights,
-            borderColor: "#34c759",
-            backgroundColor: "rgba(52, 199, 89, 0.15)",
+            borderColor: getAccentColor(),
+            backgroundColor: "rgba(10, 132, 255, 0.14)",
             borderWidth: 2,
             tension: 0.25,
             fill: true
@@ -761,14 +759,14 @@
       });
     }
 
-    // СБОРКА ИНТЕРФЕЙСА: СТРОГО СЕГОДНЯШНИЙ ДЕНЬ
+    // СБОРКА ИНТЕРФЕЙСА СЕГОДНЯШНЕГО ДНЯ
     function updateUI() {
       const today = dateKey(new Date());
 
       const now = new Date();
-      document.getElementById("topDateLabel").innerText = now.toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' });
+      document.getElementById("topDateStr").innerText = now.toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' });
 
-      // Фильтруем упражнения: показываются ТОЛЬКО если дата совпадает с сегодняшним днем
+      // Показываем тренировку ТОЛЬКО на сегодня
       const todayEntries = data.entries.filter(e => dateKey(e.date) === today);
       let vol = 0;
       let totalSets = 0;
@@ -786,7 +784,7 @@
 
       const list = document.getElementById("todayList");
       if (!todayEntries.length) {
-        list.innerHTML = `<p style="color: var(--text-sec); font-size: 14px; text-align: center; padding: 20px 0;">На сегодня тренировок нет.<br>Вставьте текст выше, чтобы начать.</p>`;
+        list.innerHTML = `<p style="color: var(--label-secondary); font-size: 14px; text-align: center; padding: 22px 16px;">На сегодня план еще не добавлен.<br>Вставьте текст выше, чтобы начать.</p>`;
         document.getElementById("clearDayBtnBox").style.display = "none";
       } else {
         document.getElementById("clearDayBtnBox").style.display = "block";
@@ -794,21 +792,20 @@
           const sets = e.setsData || [];
           const allDone = sets.length > 0 && sets.every(s => s.done);
 
-          // Генерируем каждый подход отдельной строкой с кнопкой-кружком
           const setsHtml = sets.map((s, sIdx) => `
-            <div class="set-item ${s.done ? 'completed' : ''}">
-              <div class="set-desc">${sIdx + 1} подход: ${s.weight} кг × ${s.reps}</div>
-              <button class="ios-checkbox" onclick="toggleSetDone('${e.id}', ${sIdx})">
+            <div class="set-row ${s.done ? 'completed' : ''}">
+              <div class="set-text">${sIdx + 1} подход: ${s.weight} кг × ${s.reps}</div>
+              <button class="ios-check-circle" onclick="toggleSetDone('${e.id}', ${sIdx})">
                 <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
               </button>
             </div>
           `).join("");
 
           return `
-            <div class="exercise-block">
-              <div class="exercise-title-row">
-                <div class="exercise-name">${idx + 1}. ${e.exercise}</div>
-                <div class="exercise-badge">${allDone ? '✅ Выполнено' : `${sets.filter(s=>s.done).length}/${sets.length}`}</div>
+            <div>
+              <div class="exercise-title">
+                <span>${idx + 1}. ${e.exercise}</span>
+                <span style="font-size: 13px; color: var(--label-secondary);">${allDone ? '✅ Сделано' : `${sets.filter(s=>s.done).length}/${sets.length}`}</span>
               </div>
               <div>${setsHtml}</div>
             </div>
