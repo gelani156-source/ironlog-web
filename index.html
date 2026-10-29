@@ -1,707 +1,337 @@
 <!DOCTYPE html>
-<html lang="ru" class="antialiased">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>IRONLOG</title>
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>IRONLOG Monochrome</title>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --text: #000000;
+            --text-muted: #666666;
+            --border: #000000;
+            --card-bg: #f5f5f5;
+            --overlay: rgba(0,0,0,0.4);
+        }
+        [data-theme="dark"] {
+            --bg: #000000;
+            --text: #ffffff;
+            --text-muted: #a1a1a6;
+            --border: #ffffff;
+            --card-bg: #151515;
+            --overlay: rgba(255,255,255,0.2);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--text); transition: background 0.3s, color 0.3s; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+        /* HEADER */
+        .header { padding: 20px 20px 10px; text-align: center; border-bottom: 1px solid var(--border); }
+        .logo { font-size: 22px; font-weight: 800; letter-spacing: 2px; margin-bottom: 10px; }
+        .stats-bar { display: inline-flex; gap: 20px; font-size: 13px; font-weight: 600; padding: 6px 16px; border: 1px solid var(--border); border-radius: 20px; }
+
+        /* CONTENT */
+        .content { flex: 1; overflow-y: auto; padding: 15px 20px 90px; }
+        .tab-pane { display: none; animation: fadeIn 0.2s; }
+        .tab-pane.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        h2.section-title { font-size: 20px; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* LISTS & BUTTONS */
+        .list-group { border: 1px solid var(--border); border-radius: 12px; background: var(--card-bg); overflow: hidden; margin-bottom: 20px; }
+        .list-item { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 16px; background: transparent; border: none; border-bottom: 1px solid var(--border); color: var(--text); font-size: 16px; font-weight: 500; cursor: pointer; text-align: left; }
+        .list-item:last-child { border-bottom: none; }
+        .list-item:active { opacity: 0.5; }
+        .icon { margin-right: 12px; font-size: 18px; filter: grayscale(100%); }
+        .arrow { color: var(--text-muted); font-size: 20px; }
+
+        /* CHECKLIST (WORKOUT) */
+        .chk-item { display: flex; align-items: center; padding: 16px; border-bottom: 1px solid var(--border); background: var(--card-bg); transition: 0.2s; }
+        .chk-item:last-child { border-bottom: none; }
+        .chk-circle { width: 26px; height: 26px; border: 2px solid var(--border); border-radius: 50%; margin-right: 16px; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
+        .chk-item.done .chk-circle { background: var(--text); }
+        .chk-item.done .chk-circle::after { content: "✓"; color: var(--bg); font-weight: bold; font-size: 14px; }
+        .chk-item.done .chk-info { text-decoration: line-through; color: var(--text-muted); opacity: 0.5; }
+        .chk-info { flex: 1; }
+        .chk-name { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+        .chk-meta { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+        .empty-msg { text-align: center; color: var(--text-muted); padding: 40px 20px; font-size: 14px; }
+
+        /* TAB BAR */
+        .tab-bar { position: fixed; bottom: 0; width: 100%; height: 80px; background: var(--bg); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding-bottom: 20px; z-index: 100; }
+        .tab-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: none; border: none; color: var(--text-muted); cursor: pointer; }
+        .tab-btn.active { color: var(--text); }
+        .tab-icon { font-size: 20px; margin-bottom: 4px; }
+        .tab-label { font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+
+        /* TOGGLE */
+        .toggle-wrap { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid var(--border); }
+        .toggle-wrap:last-child { border-bottom: none; }
+        .toggle { position: relative; width: 50px; height: 30px; }
+        .toggle input { display: none; }
+        .slider { position: absolute; inset: 0; border: 1px solid var(--border); border-radius: 30px; cursor: pointer; transition: 0.3s; }
+        .slider:before { content: ""; position: absolute; height: 22px; width: 22px; left: 3px; bottom: 3px; background: var(--text); border-radius: 50%; transition: 0.3s; }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* MODALS */
+        .modal { display: none; position: fixed; inset: 0; background: var(--overlay); z-index: 200; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(4px); }
+        .modal.open { display: flex; }
+        .modal-content { background: var(--bg); border: 1px solid var(--border); border-radius: 16px; width: 100%; max-width: 400px; padding: 20px; display: flex; flex-direction: column; gap: 16px; max-height: 85vh; }
+        .modal-title { font-size: 18px; font-weight: 800; text-align: center; text-transform: uppercase; }
+        textarea.m-input { width: 100%; height: 160px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; color: var(--text); font-size: 14px; resize: none; }
+        .m-actions { display: flex; gap: 10px; margin-top: auto; }
+        .m-btn { flex: 1; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); font-weight: 600; cursor: pointer; text-transform: uppercase; font-size: 13px; }
+        .m-btn.primary { background: var(--text); color: var(--bg); }
+        .review-box { border: 1px solid var(--border); border-radius: 8px; background: var(--card-bg); overflow-y: auto; max-height: 300px; }
+        .review-line { padding: 10px; border-bottom: 1px solid var(--border); font-size: 14px; }
+        .review-line:last-child { border-bottom: none; }
+
+        /* CALENDAR */
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; margin-top: 10px; }
+        .cal-head { font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; }
+        .cal-day { aspect-ratio: 1; display: flex; justify-content: center; align-items: center; border: 1px solid var(--border); border-radius: 50%; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .cal-day.active { background: var(--text); color: var(--bg); }
+        .cal-day.empty { border: none; }
+    </style>
+</head>
+<body data-theme="dark">
+
+    <div class="header">
+        <div class="logo">IRONLOG</div>
+        <div class="stats-bar">
+            <span>Прогресс: <b id="stat-done">0/0</b></span>
+            <span>Тоннаж: <b id="stat-vol">0</b> кг</span>
+        </div>
+    </div>
+
+    <div class="content">
+        <!-- ГЛАВНАЯ -->
+        <div id="tab-home" class="tab-pane active">
+            <h2 class="section-title">Меню</h2>
+            <div class="list-group">
+                <button class="list-item" onclick="openModal('modal-insert')">
+                    <span class="icon">📋</span> Вставить план тренировки <span class="arrow">›</span>
+                </button>
+                <button class="list-item" onclick="alert('Откроется модуль замеров')">
+                    <span class="icon">⚖️</span> Замеры веса и объемов <span class="arrow">›</span>
+                </button>
+                <button class="list-item" onclick="alert('Генерация карточки-картинки для сторис (В разработке)')">
+                    <span class="icon">🖼</span> Экспорт карточки <span class="arrow">›</span>
+                </button>
+            </div>
+            
+            <h2 class="section-title" style="margin-top: 30px;">Сводка за сегодня</h2>
+            <div class="list-group" style="padding: 16px; font-size: 14px; line-height: 1.6;">
+                Статус: <b id="home-status">Нет активной тренировки</b><br>
+                Сохранено в базу: <b id="home-saved">0</b> упр.
+            </div>
+        </div>
+
+        <!-- ТРЕНИРОВКА (ЧЕК-ЛИСТ) -->
+        <div id="tab-workout" class="tab-pane">
+            <h2 class="section-title">Текущая сессия</h2>
+            <div class="list-group" id="workout-list">
+                <div class="empty-msg">Вставьте текст тренировки на Главной вкладке.</div>
+            </div>
+            <button class="m-btn primary" id="btn-finish" style="width: 100%; display: none;" onclick="finishWorkout()">Завершить и сохранить</button>
+        </div>
+
+        <!-- ИСТОРИЯ -->
+        <div id="tab-history" class="tab-pane">
+            <h2 class="section-title" style="text-align: center;">Октябрь 2026</h2>
+            <div class="cal-grid">
+                <div class="cal-head">ПН</div><div class="cal-head">ВТ</div><div class="cal-head">СР</div><div class="cal-head">ЧТ</div><div class="cal-head">ПТ</div><div class="cal-head">СБ</div><div class="cal-head">ВС</div>
+                <div class="cal-day empty"></div><div class="cal-day empty"></div><div class="cal-day empty"></div>
+                <div class="cal-day">1</div><div class="cal-day">2</div><div class="cal-day active">3</div><div class="cal-day">4</div>
+                <div class="cal-day">5</div><div class="cal-day">6</div><div class="cal-day">7</div><div class="cal-day active">8</div><div class="cal-day">9</div><div class="cal-day">10</div><div class="cal-day">11</div>
+                <div class="cal-day">12</div><div class="cal-day">13</div><div class="cal-day active">14</div><div class="cal-day">15</div><div class="cal-day">16</div><div class="cal-day">17</div><div class="cal-day">18</div>
+                <div class="cal-day">19</div><div class="cal-day">20</div><div class="cal-day">21</div><div class="cal-day">22</div><div class="cal-day">23</div><div class="cal-day">24</div><div class="cal-day">25</div>
+                <div class="cal-day">26</div><div class="cal-day">27</div><div class="cal-day">28</div><div class="cal-day active">29</div><div class="cal-day">30</div><div class="cal-day">31</div><div class="cal-day empty"></div>
+            </div>
+            <div class="empty-msg" style="margin-top: 10px;">* Дни тренировок выделены инверсией</div>
+        </div>
+
+        <!-- НАСТРОЙКИ -->
+        <div id="tab-settings" class="tab-pane">
+            <h2 class="section-title">Настройки</h2>
+            <div class="list-group">
+                <div class="toggle-wrap">
+                    <span>Темная тема</span>
+                    <label class="toggle">
+                        <input type="checkbox" id="theme-toggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <button class="list-item" onclick="clearData()" style="color: var(--text); border-bottom: none;">
+                    Очистить базу данных
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ТАБ БАР -->
+    <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab('home', this)">
+            <span class="tab-icon">⌘</span>
+            <span class="tab-label">Главная</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('workout', this)">
+            <span class="tab-icon">◯</span>
+            <span class="tab-label">Тренинг</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('history', this)">
+            <span class="tab-icon">⊟</span>
+            <span class="tab-label">История</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('settings', this)">
+            <span class="tab-icon">⎈</span>
+            <span class="tab-label">Опции</span>
+        </button>
+    </div>
+
+    <!-- МОДАЛКА ВСТАВКИ -->
+    <div id="modal-insert" class="modal">
+        <div class="modal-content">
+            <div class="modal-title">Вставка плана</div>
+            <textarea id="raw-text" class="m-input" placeholder="Жим лежа 80 4/8&#10;Присед 100 3х10&#10;Подтягивания 3/10"></textarea>
+            <div class="m-actions">
+                <button class="m-btn" onclick="closeModal('modal-insert')">Отмена</button>
+                <button class="m-btn primary" onclick="parseText()">Распознать</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- МОДАЛКА РЕВЬЮ -->
+    <div id="modal-review" class="modal">
+        <div class="modal-content">
+            <div class="modal-title">Проверка</div>
+            <div class="review-box" id="review-list"></div>
+            <div class="m-actions">
+                <button class="m-btn" onclick="closeModal('modal-review'); openModal('modal-insert')">Назад</button>
+                <button class="m-btn primary" onclick="startWorkout()">Начать</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        ios: {
-                            bg: { light: '#F2F2F7', dark: '#000000' },
-                            card: { light: '#FFFFFF', dark: '#1C1C1E' },
-                            border: { light: '#D1D1D6', dark: '#3A3A3C' },
-                            text: { light: '#000000', dark: '#FFFFFF' },
-                            secondary: '#8E8E93',
-                            active: { light: '#E5E5EA', dark: '#2C2C2E' }
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
-                    },
-                    spacing: {
-                        'safe-bottom': 'env(safe-area-inset-bottom)',
-                        'safe-top': 'env(safe-area-inset-top)',
-                    }
+        let currentWorkout = [];
+
+        // Переключение вкладок
+        window.switchTab = function(id, btn) {
+            document.querySelectorAll('.tab-pane, .tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + id).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        // Управление модальными окнами
+        window.openModal = id => document.getElementById(id).classList.add('open');
+        window.closeModal = id => document.getElementById(id).classList.remove('open');
+
+        // Парсер текста
+        window.parseText = function() {
+            const text = document.getElementById('raw-text').value;
+            const lines = text.split('\n').filter(l => l.trim().length > 0);
+            let parsed = [];
+            
+            lines.forEach(line => {
+                const match = line.match(/^(.+?)\s+(\d+(?:[.,]\d+)?)\s+(\d+)\s*[/xх*]\s*(\d+)/i) || 
+                              line.match(/^(.+?)\s+(\d+)\s*[/xх*]\s*(\d+)(?:\s+(\d+(?:[.,]\d+)?))?/i);
+                
+                if (match) {
+                    let name = match[1].trim();
+                    let weight = match.length === 5 && match[2].includes('.') ? parseFloat(match[2]) : (match[4] ? parseFloat(match[4]) : 0);
+                    let sets = parseInt(match[3] || match[2]);
+                    let reps = parseInt(match[4] || match[3]);
+                    parsed.push({ name, weight, sets, reps, done: false });
+                } else if(!/^(понедельник|вторник|среда|четверг|пятница|суббота|воскресенье)$/i.test(line.trim())) {
+                    parsed.push({ name: line.trim(), weight: 0, sets: 1, reps: 1, done: false });
                 }
+            });
+
+            if (!parsed.length) return alert('Не найдено упражнений!');
+            
+            document.getElementById('review-list').innerHTML = parsed.map((p, i) => 
+                `<div class="review-line"><b>${i+1}. ${p.name}</b><br><span style="color:var(--text-muted)">${p.sets}x${p.reps} | ${p.weight} кг</span></div>`
+            ).join('');
+            
+            window.tempWorkout = parsed;
+            closeModal('modal-insert');
+            openModal('modal-review');
+        }
+
+        // Старт тренировки
+        window.startWorkout = function() {
+            currentWorkout = window.tempWorkout;
+            closeModal('modal-review');
+            document.getElementById('raw-text').value = '';
+            document.getElementById('home-status').innerText = 'В процессе...';
+            document.getElementById('btn-finish').style.display = 'block';
+            
+            renderWorkout();
+            updateHeader();
+            switchTab('workout', document.querySelectorAll('.tab-btn')[1]);
+        }
+
+        // Отрисовка чек-листа
+        function renderWorkout() {
+            const list = document.getElementById('workout-list');
+            list.innerHTML = currentWorkout.map((p, i) => `
+                <div class="chk-item ${p.done ? 'done' : ''}" onclick="toggleExercise(${i})">
+                    <div class="chk-circle"></div>
+                    <div class="chk-info">
+                        <div class="chk-name">${p.name}</div>
+                        <div class="chk-meta">${p.sets} × ${p.reps} · ${p.weight} кг</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Клик по упражнению (с haptic feedback)
+        window.toggleExercise = function(i) {
+            currentWorkout[i].done = !currentWorkout[i].done;
+            if(currentWorkout[i].done && navigator.vibrate) navigator.vibrate(50); // Легкая вибрация
+            renderWorkout();
+            updateHeader();
+        }
+
+        // Обновление шапки со статистикой
+        function updateHeader() {
+            let done = currentWorkout.filter(p => p.done).length;
+            let total = currentWorkout.length;
+            let vol = currentWorkout.reduce((sum, p) => p.done ? sum + (p.weight * p.sets * p.reps) : sum, 0);
+            
+            document.getElementById('stat-done').innerText = `${done}/${total}`;
+            document.getElementById('stat-vol').innerText = vol;
+        }
+
+        // Завершение тренировки (визуальное сохранение)
+        window.finishWorkout = function() {
+            let doneCount = currentWorkout.filter(p => p.done).length;
+            document.getElementById('home-status').innerText = 'Завершена';
+            document.getElementById('home-saved').innerText = doneCount;
+            document.getElementById('btn-finish').style.display = 'none';
+            currentWorkout = [];
+            renderWorkout();
+            updateHeader();
+            switchTab('home', document.querySelectorAll('.tab-btn')[0]);
+            alert('Тренировка сохранена локально!');
+        }
+
+        // Управление темой
+        const themeToggle = document.getElementById('theme-toggle');
+        themeToggle.addEventListener('change', e => {
+            document.body.setAttribute('data-theme', e.target.checked ? 'dark' : 'light');
+        });
+
+        // Очистка данных
+        window.clearData = function() {
+            if(confirm('Точно очистить всё?')) {
+                currentWorkout = [];
+                document.getElementById('home-status').innerText = 'Нет активной тренировки';
+                document.getElementById('home-saved').innerText = '0';
+                updateHeader();
+                renderWorkout();
             }
         }
     </script>
-
-    <!-- FontAwesome & Chart.js -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <style>
-        body {
-            -webkit-tap-highlight-color: transparent;
-            overscroll-behavior-y: none;
-        }
-        
-        .main-container {
-            height: calc(100vh - 4rem - env(safe-area-inset-bottom));
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-        /* Monochrome iOS Switch Toggle */
-        .ios-toggle {
-            position: relative;
-            display: inline-block;
-            width: 51px;
-            height: 31px;
-        }
-        .ios-toggle input { opacity: 0; width: 0; height: 0; }
-        
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #E5E5EA; /* Light gray for unchecked light mode */
-            border: 1px solid #D1D1D6;
-            transition: .3s;
-            border-radius: 31px;
-        }
-        .dark .slider { 
-            background-color: #1C1C1E; 
-            border: 1px solid #3A3A3C;
-        }
-        
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 27px; width: 27px;
-            left: 1px; bottom: 1px;
-            background-color: #FFFFFF;
-            border: 1px solid #D1D1D6;
-            transition: .3s;
-            border-radius: 50%;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .dark .slider:before {
-            background-color: #8E8E93;
-            border-color: #3A3A3C;
-        }
-
-        input:checked + .slider {
-            background-color: #000000; /* Black active in light mode */
-            border-color: #000000;
-        }
-        .dark input:checked + .slider {
-            background-color: #FFFFFF; /* White active in dark mode */
-            border-color: #FFFFFF;
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(20px);
-            background-color: #FFFFFF;
-            border-color: transparent;
-        }
-        .dark input:checked + .slider:before {
-            background-color: #000000;
-            border-color: transparent;
-        }
-
-        /* Toast Animation */
-        @keyframes slideInDown {
-            from { transform: translate3d(-50%, -100%, 0); opacity: 0; }
-            to { transform: translate3d(-50%, 0, 0); opacity: 1; }
-        }
-        .toast-enter { animation: slideInDown 0.3s ease-out forwards; }
-    </style>
-</head>
-<body class="bg-ios-bg-light dark:bg-ios-bg-dark text-ios-text-light dark:text-ios-text-dark transition-colors duration-200 selection:bg-ios-secondary/30">
-
-    <!-- Toast Container -->
-    <div id="toast-container" class="fixed top-safe-top left-1/2 z-50 pointer-events-none mt-4 w-11/12 max-w-sm flex flex-col gap-2"></div>
-
-    <!-- Timer Overlay -->
-    <div id="timer-overlay" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-40 bg-ios-text-light dark:bg-ios-text-dark text-ios-bg-light dark:text-ios-bg-dark px-6 py-3 rounded-full font-bold text-lg shadow-lg border border-ios-border-light dark:border-ios-border-dark flex items-center gap-3">
-        <i class="fa-solid fa-stopwatch animate-pulse"></i>
-        <span id="timer-display">01:30</span>
-        <button onclick="stopTimer()" class="ml-2 text-ios-bg-light/70 dark:text-ios-bg-dark/70 hover:text-ios-bg-light dark:hover:text-ios-bg-dark"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-
-    <!-- Header -->
-    <header class="fixed top-0 w-full z-30 bg-ios-bg-light/80 dark:bg-ios-bg-dark/80 backdrop-blur-md pt-safe-top border-b border-ios-border-light dark:border-ios-border-dark">
-        <div class="h-12 flex items-center justify-center px-4">
-            <h1 id="header-title" class="text-[17px] font-semibold tracking-tight uppercase">IRONLOG</h1>
-        </div>
-    </header>
-
-    <!-- Main Content Area -->
-    <main id="app-content" class="main-container mt-12 mb-[60px] pt-4 pb-8 px-4 w-full max-w-2xl mx-auto no-scrollbar">
-        <!-- Views injected here -->
-    </main>
-
-    <!-- Bottom Tab Bar -->
-    <nav class="fixed bottom-0 w-full z-40 bg-ios-bg-light/90 dark:bg-ios-bg-dark/90 backdrop-blur-xl border-t border-ios-border-light dark:border-ios-border-dark pb-safe-bottom">
-        <div class="flex justify-around items-center h-[55px] px-2 text-[10px] font-medium">
-            <button onclick="switchTab('dashboard')" class="tab-btn flex flex-col items-center justify-center w-full h-full text-ios-text-light dark:text-ios-text-dark transition-colors" data-tab="dashboard">
-                <i class="fa-solid fa-layer-group text-[22px] mb-1"></i>
-                <span>Главная</span>
-            </button>
-            <button onclick="switchTab('workouts')" class="tab-btn flex flex-col items-center justify-center w-full h-full text-ios-secondary hover:text-ios-text-light dark:hover:text-ios-text-dark transition-colors" data-tab="workouts">
-                <i class="fa-solid fa-dumbbell text-[22px] mb-1"></i>
-                <span>Тренировки</span>
-            </button>
-            <button onclick="switchTab('measurements')" class="tab-btn flex flex-col items-center justify-center w-full h-full text-ios-secondary hover:text-ios-text-light dark:hover:text-ios-text-dark transition-colors" data-tab="measurements">
-                <i class="fa-solid fa-weight-scale text-[22px] mb-1"></i>
-                <span>Замеры</span>
-            </button>
-            <button onclick="switchTab('settings')" class="tab-btn flex flex-col items-center justify-center w-full h-full text-ios-secondary hover:text-ios-text-light dark:hover:text-ios-text-dark transition-colors" data-tab="settings">
-                <i class="fa-solid fa-gear text-[22px] mb-1"></i>
-                <span>Настройки</span>
-            </button>
-        </div>
-    </nav>
-
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, collection, onSnapshot, setDoc, deleteDoc, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-    // --- STATE ---
-    const state = {
-        currentTab: 'dashboard',
-        entries: [],
-        measurements: [],
-        userId: null,
-        theme: localStorage.getItem('theme') || 'system',
-        chartInstance: null,
-        timerInterval: null
-    };
-
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'ironlog-mono';
-    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-    const customToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-    let db, auth;
-
-    // --- UTILS ---
-    const showToast = (message) => {
-        const container = document.getElementById('toast-container');
-        const toast = document.createElement('div');
-        
-        toast.className = `toast-enter flex items-center justify-center bg-ios-text-light dark:bg-ios-text-dark text-ios-bg-light dark:text-ios-bg-dark px-4 py-3 rounded-xl shadow-lg border border-ios-border-light dark:border-ios-border-dark text-[14px] font-semibold tracking-wide uppercase`;
-        toast.innerHTML = `<span>${message}</span>`;
-        
-        container.appendChild(toast);
-        setTimeout(() => {
-            toast.style.opacity = '0';
-            toast.style.transform = 'translate3d(-50%, -20px, 0)';
-            toast.style.transition = 'all 0.3s ease';
-            setTimeout(() => toast.remove(), 300);
-        }, 2500);
-    };
-
-    const makeId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-    const dateKey = (value) => {
-        const d = new Date(value);
-        return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, "0"), String(d.getDate()).padStart(2, "0")].join("-");
-    };
-    const dateLabel = (key) => {
-        const [year, month, day] = key.split("-").map(Number);
-        return new Date(year, month - 1, day).toLocaleDateString("ru-RU", { weekday: "short", day: "numeric", month: "long" });
-    };
-    const entryVolume = (e) => (e.setsData || []).reduce((sum, s) => sum + (Number(s.weight) || 0) * (Number(s.reps) || 0), 0);
-    const entryBestWeight = (e) => Math.max(0, ...(e.setsData || []).map(s => Number(s.weight) || 0));
-
-    // --- THEME LOGIC ---
-    const applyTheme = () => {
-        const isDark = state.theme === 'dark' || (state.theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-        if (isDark) document.documentElement.classList.add('dark');
-        else document.documentElement.classList.remove('dark');
-        if(state.chartInstance) updateChartColors();
-        
-        // Update toggle UI if exists
-        const toggle = document.getElementById('theme-toggle');
-        if (toggle) toggle.checked = isDark;
-    };
-
-    window.toggleTheme = () => {
-        const isDark = document.documentElement.classList.contains('dark');
-        state.theme = isDark ? 'light' : 'dark';
-        localStorage.setItem('theme', state.theme);
-        applyTheme();
-    };
-
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-        if(state.theme === 'system') applyTheme();
-    });
-
-    // --- TIMER LOGIC ---
-    window.startTimer = (seconds = 90) => {
-        if(state.timerInterval) clearInterval(state.timerInterval);
-        
-        const overlay = document.getElementById('timer-overlay');
-        const display = document.getElementById('timer-display');
-        overlay.classList.remove('hidden');
-        
-        let timeLeft = seconds;
-        
-        const updateDisplay = () => {
-            const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
-            const s = (timeLeft % 60).toString().padStart(2, '0');
-            display.innerText = `${m}:${s}`;
-        };
-        
-        updateDisplay();
-        
-        state.timerInterval = setInterval(() => {
-            timeLeft--;
-            updateDisplay();
-            
-            if(timeLeft <= 0) {
-                window.stopTimer();
-                showToast("Время отдыха вышло!");
-                // Vibrate if supported
-                if("vibrate" in navigator) navigator.vibrate([200, 100, 200]);
-            }
-        }, 1000);
-    };
-
-    window.stopTimer = () => {
-        if(state.timerInterval) clearInterval(state.timerInterval);
-        document.getElementById('timer-overlay').classList.add('hidden');
-    };
-
-
-    // --- PARSER ---
-    function parseWorkoutText(text) {
-        const exercises = [];
-        const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-        
-        for (let line of lines) {
-            line = line.replace(/^\s*[-*•]\s*/, "").replace(/^\d+[.)]\s*/, "").trim();
-            if(!line || /^(понедельник|вторник|среда|четверг|пятница|суббота|воскресенье)/i.test(line)) continue;
-
-            let name = line, sets = 3, reps = 10, weight = 0;
-            const match1 = line.match(/^(.+?)\s+(\d+(?:[.,]\d+)?)\s+(\d+)\s*[/xх*]\s*(\d+)$/i);
-            const match2 = line.match(/^(.+?)\s+(\d+)\s*[/xх*]\s*(\d+)(?:\s+(\d+(?:[.,]\d+)?))?$/i);
-
-            if (match1) {
-                name = match1[1].trim(); weight = parseFloat(match1[2].replace(',','.')); sets = parseInt(match1[3]); reps = parseInt(match1[4]);
-            } else if (match2) {
-                name = match2[1].trim(); sets = parseInt(match2[2]); reps = parseInt(match2[3]); weight = match2[4] ? parseFloat(match2[4].replace(',','.')) : 0;
-            } else {
-                name = line;
-            }
-
-            const setsData = Array.from({length: sets}, () => ({weight, reps}));
-            exercises.push({ exercise: name, setsData, date: new Date().toISOString() });
-        }
-        return exercises;
-    }
-
-    // --- NAVIGATION ---
-    window.switchTab = (tab) => {
-        state.currentTab = tab;
-        
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            if (btn.dataset.tab === tab) {
-                btn.classList.remove('text-ios-secondary');
-                btn.classList.add('text-ios-text-light', 'dark:text-ios-text-dark');
-            } else {
-                btn.classList.add('text-ios-secondary');
-                btn.classList.remove('text-ios-text-light', 'dark:text-ios-text-dark');
-            }
-        });
-
-        const titles = { 'dashboard': 'Главная', 'workouts': 'Тренировки', 'measurements': 'Замеры', 'settings': 'Настройки' };
-        document.getElementById('header-title').innerText = titles[tab];
-        renderCurrentView();
-    };
-
-    const renderCurrentView = () => {
-        const container = document.getElementById('app-content');
-        container.innerHTML = ''; 
-        if (state.currentTab === 'dashboard') renderDashboard(container);
-        if (state.currentTab === 'workouts') renderWorkouts(container);
-        if (state.currentTab === 'measurements') renderMeasurements(container);
-        if (state.currentTab === 'settings') renderSettings(container);
-    };
-
-    // --- VIEWS ---
-
-    const renderDashboard = (container) => {
-        const todayKey = dateKey(new Date());
-        const todayEntries = state.entries.filter(e => dateKey(e.date) === todayKey);
-        const todayVol = todayEntries.reduce((sum, e) => sum + entryVolume(e), 0);
-        
-        let html = `
-            <div class="flex flex-col gap-5">
-                
-                <!-- Status Card -->
-                <div class="bg-ios-card-light dark:bg-ios-card-dark border border-ios-border-light dark:border-ios-border-dark rounded-2xl p-5 shadow-sm">
-                    <div class="text-[12px] uppercase tracking-widest font-bold text-ios-secondary mb-1">Сегодня</div>
-                    <div class="flex justify-between items-end">
-                        <div>
-                            <div class="text-[32px] font-bold leading-tight">${todayVol.toLocaleString()} <span class="text-[16px] text-ios-secondary font-normal">кг</span></div>
-                            <div class="text-[14px] text-ios-secondary mt-1">${todayEntries.length} упражнений</div>
-                        </div>
-                        <i class="fa-solid fa-dumbbell text-4xl text-ios-border-light dark:text-ios-border-dark opacity-50"></i>
-                    </div>
-                </div>
-
-                <!-- Original Script Actions (Monochrome Grid) -->
-                <div class="grid grid-cols-1 gap-3">
-                    <button onclick="switchTab('workouts')" class="flex items-center justify-between bg-ios-card-light dark:bg-ios-card-dark border border-ios-border-light dark:border-ios-border-dark rounded-xl p-4 active:bg-ios-active-light dark:active:bg-ios-active-dark transition-colors text-left">
-                        <div class="flex items-center gap-4">
-                            <div class="w-8 flex justify-center"><i class="fa-solid fa-clipboard-list text-xl"></i></div>
-                            <span class="font-semibold text-[16px]">Вставить тренировку</span>
-                        </div>
-                        <i class="fa-solid fa-chevron-right text-ios-secondary text-sm"></i>
-                    </button>
-
-                    <button onclick="window.mockSync()" class="flex items-center justify-between bg-ios-card-light dark:bg-ios-card-dark border border-ios-border-light dark:border-ios-border-dark rounded-xl p-4 active:bg-ios-active-light dark:active:bg-ios-active-dark transition-colors text-left">
-                        <div class="flex items-center gap-4">
-                            <div class="w-8 flex justify-center"><i class="fa-solid fa-rotate text-xl"></i></div>
-                            <span class="font-semibold text-[16px]">Синхронизировать итоги</span>
-                        </div>
-                        <i class="fa-solid fa-chevron-right text-ios-secondary text-sm"></i>
-                    </button>
-
-                    <button onclick="switchTab('measurements')" class="flex items-center justify-between bg-ios-card-light dark:bg-ios-card-dark border border-ios-border-light dark:border-ios-border-dark rounded-xl p-4 active:bg-ios-active-light dark:active:bg-ios-active-dark transition-colors text-left">
-                        <div class="flex items-center gap-4">
-                            <div class="w-8 flex justify-center"><i class="fa-solid fa-weight-scale text-xl"></i></div>
-                            <span class="font-semibold text-[16px]">Замеры веса и объемов</span>
-                        </div>
-                        <i class="fa-solid fa-chevron-right text-ios-secondary text-sm"></i>
-                    </button>
-
-                    <button onclick="window.startTimer(90)" class="flex items-center justify-between bg-ios-text-light dark:bg-ios-text-dark text-ios-bg-light dark:text-ios-bg-dark border border-ios-text-light dark:border-ios-text-dark rounded-xl p-4 active:opacity-80 transition-opacity text-left shadow-md">
-                        <div class="flex items-center gap-4">
-                            <div class="w-8 flex justify-center"><i class="fa-solid fa-stopwatch text-xl"></i></div>
-                            <span class="font-semibold text-[16px]">Таймер отдыха (90 сек)</span>
-                        </div>
-                        <i class="fa-solid fa-play text-sm"></i>
-                    </button>
-
-                    <button onclick="switchTab('measurements')" class="flex items-center justify-between bg-ios-card-light dark:bg-ios-card-dark border border-ios-border-light dark:border-ios-border-dark rounded-xl p-4 active:bg-ios-active-light dark:active:bg-ios-active-dark transition-colors text-left">
-                        <div class="flex items-center gap-4">
-                            <div class="w-8 flex justify-center"><i class="fa-solid fa-chart-line text-xl"></i></div>
-                            <span class="font-semibold text-[16px]">График прогресса</span>
-                        </div>
-                        <i class="fa-solid fa-chevron-right text-ios-secondary text-sm"></i>
-                    </button>
-
-                    <button onclick="window.deleteToday()" class="flex items-center justify-between bg-transparent border border-ios-border-light dark:border-ios-border-dark rounded-xl p-4 active:bg-ios-active-light dark:active:bg-ios-active-dark transition-colors text-left mt-2">
-                        <div class="flex items-center gap-4">
-                            <div class="w-8 flex justify-center"><i class="fa-solid fa-trash-can text-xl text-ios-text-light dark:text-ios-text-dark"></i></div>
-                            <span class="font-semibold text-[16px]">Удалить тренировку (сегодня)</span>
-                        </div>
-                    </button>
-                </div>
-            </div>
-        `;
-        container.innerHTML = html;
-    };
-
-    window.mockSync = () => {
-        showToast("Синхронизировано");
-    };
-
-    window.deleteToday = async () => {
-        if(!state.userId) return;
-        const todayKey = dateKey(new Date());
-        const entriesToDelete = state.entries.filter(e => dateKey(e.date) === todayKey);
-        
-        if(entriesToDelete.length === 0) {
-            showToast('Нет записей за сегодня');
-            return;
-        }
-
-        if(confirm("Удалить записи за сегодня?")) {
-            try {
-                await Promise.all(entriesToDelete.map(e => deleteDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'entries', e.id))));
-                showToast('Записи удалены');
-            } catch(e) {
-                showToast('Ошибка');
-            }
-        }
-    };
-
-    const renderWorkouts = (container) => {
-        const grouped = state.entries.reduce((acc, e) => {
-            const key = dateKey(e.date);
-            if(!acc[key]) acc[key] = [];
-            acc[key].push(e);
-            return acc;
-        }, {});
-
-        const sortedDates = Object.keys(grouped).sort((a,b) => new Date(b) - new Date(a));
-
-        let html = `
-            <div class="flex flex-col gap-6">
-                <!-- Add New -->
-                <div>
-                    <h2 class="text-[12px] uppercase tracking-widest font-bold text-ios-secondary mb-2 ml-2">Импорт из текста</h2>
-                    <div class="bg-ios-card-light dark:bg-ios-card-dark border border-ios-border-light dark:border-ios-border-dark rounded-2xl overflow-hidden shadow-sm flex flex-col">
-                        <textarea id="workout-input" rows="4" placeholder="Жим 80 4/8&#10;Присед 100 3/5" class="w-full bg-transparent px-4 py-4 text-[16px] focus:outline-none resize-none placeholder-ios-secondary"></textarea>
-                        <div class="border-t border-ios-border-light dark:border-ios-border-dark p-3 bg-ios-bg-light dark:bg-ios-bg-dark flex justify-end">
-                            <button id="btn-parse-workout" class="bg-ios-text-light dark:bg-ios-text-dark text-ios-bg-light dark:text-ios-bg-dark font-bold text-[14px] uppercase tracking-wide py-2 px-6 rounded-lg active:opacity-80 transition-opacity">
-                                Сохранить
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- History -->
-                <div>
-                    <h2 class="text-[12px] uppercase tracking-widest font-bold text-ios-secondary mb-2 ml-2">История (Календарь)</h2>
-                    ${sortedDates.length === 0 ? '<div class="text-center text-ios-secondary mt-6 border border-dashed border-ios-border-light dark:border-ios-border-dark rounded-xl p-6">Нет записей</div>' : ''}
-                    
-                    <div class="flex flex-col gap-4">
-                        ${sortedDates.map(date => {
-                            const dayEntries = grouped[date];
-                            const vol = dayEntries.reduce((s, e) => s + entryVolume(e), 0);
-                            return `
-                                <div class="bg-ios-card-light dark:bg-ios-card-dark border border-ios-border-light dark:border-ios-border-dark rounded-2xl p-4 shadow-sm relative">
-                                    <button onclick="window.deleteDay('${date}')" class="absolute top-4 right-4 text-ios-secondary hover:text-ios-text-light dark:hover:text-ios-text-dark transition-colors">
-                                        <i class="fa-solid fa-trash-can"></i>
-                                    </button>
-                                    <div class="text-[16px] font-bold mb-1 pr-8">${dateLabel(date)}</div>
-                                    <div class="text-[13px] text-ios-secondary mb-4 uppercase tracking-wide">Тоннаж: ${vol.toLocaleString()} кг</div>
-                                    <div class="flex flex-col gap-2">
-                                        ${dayEntries.map(e => `
-                                            <div class="flex justify-between items-center text-[15px] border-b border-ios-border-light dark:border-ios-border-dark pb-2 last:border-0 last:pb-0">
-                                                <span class="font-medium truncate pr-2">${e.exercise}</span>
-                                                <span class="text-ios-secondary font-mono text-[14px] whitespace-nowrap">${e.setsData.length}x${e.setsData[0]?.reps||0} · <strong class="text-ios-text-light dark:text-ios-text-dark font-semibold">${entryBestWeight(e)} кг</strong></span>
-                                            </div>
-                                        `).join('')}
-                                    </div>
-                                </div>
-                            `;
-                        }).join('')}
-                    </div>
-                </div>
-            </div>
-        `;
-        container.innerHTML = html;
-
-        document.getElementById('btn-parse-workout').addEventListener('click', async () => {
-            const val = document.getElementById('workout-input').value;
-            if(!val.trim()) return;
-            const parsed = parseWorkoutText(val);
-            if(parsed.length === 0) { showToast('Не распознано'); return; }
-            if(!state.userId) return;
-
-            try {
-                const batch = parsed.map(item => {
-                    const id = makeId();
-                    return setDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'entries', id), { ...item, id });
-                });
-                await Promise.all(batch);
-                document.getElementById('workout-input').value = '';
-                showToast(`Добавлено: ${parsed.length}`);
-            } catch (e) { showToast('Ошибка'); }
-        });
-    };
-
-    window.deleteDay = async (dateStr) => {
-        if(!state.userId) return;
-        if(confirm(`Удалить тренировку за ${dateStr}?`)) {
-            const entriesToDelete = state.entries.filter(e => dateKey(e.date) === dateStr);
-            try {
-                await Promise.all(entriesToDelete.map(e => deleteDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'entries', e.id))));
-                showToast('Удалено');
-            } catch(e) { showToast('Ошибка'); }
-        }
-    };
-
-    const renderMeasurements = (container) => {
-        let html = `
-            <div class="flex flex-col gap-6">
-                <!-- Chart -->
-                <div>
-                    <h2 class="text-[12px] uppercase tracking-widest font-bold text-ios-secondary mb-2 ml-2">Динамика веса</h2>
-                    <div class="bg-ios-card-light dark:bg-ios-card-dark border border-ios-border-light dark:border-ios-border-dark rounded-2xl p-4 shadow-sm w-full h-[220px] relative">
-                        <canvas id="weightChart"></canvas>
-                    </div>
-                </div>
-
-                <!-- Input Form -->
-                <div>
-                    <h2 class="text-[12px] uppercase tracking-widest font-bold text-ios-secondary mb-2 ml-2">Новый замер</h2>
-                    <div class="bg-ios-card-light dark:bg-ios-card-dark border border-ios-border-light dark:border-ios-border-dark rounded-2xl shadow-sm overflow-hidden flex flex-col">
-                        ${['Вес', 'Талия', 'Грудь', 'Бицепс', 'Бедро'].map((label, idx) => {
-                            const ids = ['weight', 'waist', 'chest', 'arm', 'thigh'];
-                            const isLast = idx === 4;
-                            return `
-                                <div class="flex items-center justify-between px-4 py-3 ${isLast ? '' : 'border-b border-ios-border-light dark:border-ios-border-dark'}">
-                                    <span class="font-semibold text-[16px]">${label} <span class="text-[12px] text-ios-secondary font-normal ml-1">${ids[idx]==='weight'?'кг':'см'}</span></span>
-                                    <input type="number" step="0.1" id="m-${ids[idx]}" placeholder="0.0" class="w-24 bg-transparent text-right text-[16px] font-mono focus:outline-none placeholder-ios-secondary">
-                                </div>
-                            `;
-                        }).join('')}
-                    </div>
-                    <button id="btn-save-measure" class="w-full mt-4 bg-ios-text-light dark:bg-ios-text-dark text-ios-bg-light dark:text-ios-bg-dark border border-ios-text-light dark:border-ios-text-dark rounded-xl py-3.5 text-[15px] uppercase font-bold tracking-wide shadow-md active:opacity-80 transition-opacity">
-                        Сохранить
-                    </button>
-                </div>
-            </div>
-        `;
-        container.innerHTML = html;
-
-        document.getElementById('btn-save-measure').addEventListener('click', async () => {
-            const data = {
-                weight: parseFloat(document.getElementById('m-weight').value) || 0,
-                waist: parseFloat(document.getElementById('m-waist').value) || 0,
-                chest: parseFloat(document.getElementById('m-chest').value) || 0,
-                arm: parseFloat(document.getElementById('m-arm').value) || 0,
-                thigh: parseFloat(document.getElementById('m-thigh').value) || 0,
-            };
-
-            if(!Object.values(data).some(v => v > 0)) return;
-            if(!state.userId) return;
-
-            const id = makeId();
-            try {
-                await setDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'measurements', id), { ...data, id, date: new Date().toISOString() });
-                showToast('Сохранено');
-                ['weight','waist','chest','arm','thigh'].forEach(id => document.getElementById(`m-${id}`).value = '');
-            } catch(e) { showToast('Ошибка'); }
-        });
-
-        initChart();
-    };
-
-    const initChart = () => {
-        const ctx = document.getElementById('weightChart');
-        if(!ctx) return;
-        if(state.chartInstance) state.chartInstance.destroy();
-
-        const records = [...state.measurements].filter(m => m.weight > 0).sort((a,b) => new Date(a.date) - new Date(b.date));
-        
-        if(records.length === 0) {
-            ctx.parentNode.innerHTML = '<div class="absolute inset-0 flex items-center justify-center text-ios-secondary text-sm font-semibold uppercase tracking-wide">Нет данных</div>';
-            return;
-        }
-
-        const isDark = document.documentElement.classList.contains('dark');
-        const lineColor = isDark ? '#FFFFFF' : '#000000';
-        const gridColor = isDark ? '#3A3A3C' : '#D1D1D6';
-        const textColor = '#8E8E93';
-
-        state.chartInstance = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: records.map(m => dateKey(m.date).slice(5)),
-                datasets: [{
-                    data: records.map(m => m.weight),
-                    borderColor: lineColor,
-                    backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
-                    borderWidth: 2,
-                    tension: 0.3,
-                    pointRadius: 4,
-                    pointBackgroundColor: isDark ? '#000000' : '#FFFFFF',
-                    pointBorderColor: lineColor,
-                    pointBorderWidth: 2,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    x: { grid: { display: false }, ticks: { color: textColor, font: { family: 'system-ui', size: 10 } } },
-                    y: { grid: { color: gridColor }, ticks: { color: textColor, font: { family: 'system-ui', size: 10 } } }
-                }
-            }
-        });
-    };
-
-    window.updateChartColors = () => {
-        if(state.currentTab === 'measurements' && state.chartInstance) initChart();
-    };
-
-    const renderSettings = (container) => {
-        const isDarkChecked = document.documentElement.classList.contains('dark') ? 'checked' : '';
-        
-        let html = `
-            <div class="flex flex-col gap-6">
-                <div>
-                    <h2 class="text-[12px] uppercase tracking-widest font-bold text-ios-secondary mb-2 ml-2">Интерфейс</h2>
-                    <div class="bg-ios-card-light dark:bg-ios-card-dark border border-ios-border-light dark:border-ios-border-dark rounded-2xl p-4 shadow-sm flex items-center justify-between">
-                        <span class="font-semibold text-[16px]">Темная тема</span>
-                        <label class="ios-toggle">
-                            <input type="checkbox" id="theme-toggle" onchange="toggleTheme()" ${isDarkChecked}>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                </div>
-
-                <div>
-                    <h2 class="text-[12px] uppercase tracking-widest font-bold text-ios-secondary mb-2 ml-2">Управление данными</h2>
-                    <div class="bg-ios-card-light dark:bg-ios-card-dark border border-ios-border-light dark:border-ios-border-dark rounded-2xl shadow-sm overflow-hidden">
-                        <button onclick="window.clearAllData()" class="w-full text-left px-4 py-4 flex items-center gap-3 active:bg-ios-active-light dark:active:bg-ios-active-dark transition-colors">
-                            <i class="fa-solid fa-triangle-exclamation text-ios-text-light dark:text-ios-text-dark"></i>
-                            <span class="font-semibold text-[16px]">Удалить все данные</span>
-                        </button>
-                    </div>
-                    <p class="text-[11px] uppercase tracking-widest text-ios-secondary mt-3 px-2 text-center font-mono">ID: ${state.userId ? state.userId.slice(0,8) : '---'}</p>
-                </div>
-            </div>
-        `;
-        container.innerHTML = html;
-    };
-
-    window.clearAllData = async () => {
-        if(!state.userId) return;
-        if(confirm("Вы уверены, что хотите удалить ВСЕ данные (тренировки и замеры)? Это действие необратимо.")) {
-            try {
-                const ePromises = state.entries.map(e => deleteDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'entries', e.id)));
-                const mPromises = state.measurements.map(m => deleteDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'measurements', m.id)));
-                await Promise.all([...ePromises, ...mPromises]);
-                showToast('Данные очищены');
-            } catch(err) { showToast('Ошибка'); }
-        }
-    };
-
-
-    // --- INIT ---
-    async function initApp() {
-        applyTheme();
-
-        if (!firebaseConfig) {
-            document.body.innerHTML = '<div class="p-8 text-center font-mono text-sm border m-4 border-black dark:border-white">FIREBASE CONFIG MISSING</div>';
-            return;
-        }
-
-        const app = initializeApp(firebaseConfig);
-        db = getFirestore(app);
-        auth = getAuth(app);
-
-        try {
-            if (customToken) await signInWithCustomToken(auth, customToken);
-            else await signInAnonymously(auth);
-        } catch (error) { return; }
-
-        state.userId = auth.currentUser.uid;
-
-        onSnapshot(query(collection(db, 'artifacts', appId, 'users', state.userId, 'entries')), (snapshot) => {
-            state.entries = snapshot.docs.map(d => d.data());
-            if(state.currentTab === 'dashboard' || state.currentTab === 'workouts') renderCurrentView();
-        }, () => {});
-
-        onSnapshot(query(collection(db, 'artifacts', appId, 'users', state.userId, 'measurements')), (snapshot) => {
-            state.measurements = snapshot.docs.map(d => d.data());
-            if(state.currentTab === 'dashboard' || state.currentTab === 'measurements') renderCurrentView();
-        }, () => {});
-
-        renderCurrentView();
-    }
-
-    initApp();
-</script>
 </body>
 </html>
