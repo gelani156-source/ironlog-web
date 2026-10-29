@@ -12,26 +12,24 @@
             --card-bg: #FFFFFF;
             --text: #000000;
             --text-muted: #8A8A8E;
-            --separator: rgba(60, 60, 67, 0.29);
+            --separator: rgba(60, 60, 67, 0.2);
             --blue: #007AFF;
             --green: #34C759;
+            --yellow: #FFCC00;
             --red: #FF3B30;
-            --orange: #FF9500;
-            --purple: #5856D6;
             --overlay: rgba(0, 0, 0, 0.4);
-            --shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+            --shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
         }
         [data-theme="dark"] {
             --bg: #000000;
             --card-bg: #1C1C1E;
             --text: #FFFFFF;
             --text-muted: #98989D;
-            --separator: rgba(84, 84, 88, 0.65);
+            --separator: rgba(84, 84, 88, 0.5);
             --blue: #0A84FF;
             --green: #30D158;
+            --yellow: #FFD60A;
             --red: #FF453A;
-            --orange: #FF9F0A;
-            --purple: #5E5CE6;
             --overlay: rgba(255, 255, 255, 0.2);
             --shadow: none;
         }
@@ -39,7 +37,7 @@
         body { background: var(--bg); color: var(--text); transition: background 0.3s, color 0.3s; display: flex; flex-direction: column; height: 100vh; overflow: hidden; -webkit-font-smoothing: antialiased; }
 
         /* HEADER */
-        .header { padding: 30px 20px 10px; padding-top: env(safe-area-inset-top, 30px); display: flex; justify-content: space-between; align-items: flex-end; }
+        .header { padding: 35px 20px 12px; padding-top: env(safe-area-inset-top, 35px); display: flex; justify-content: space-between; align-items: flex-end; }
         .logo { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
 
         /* TOGGLE */
@@ -66,12 +64,18 @@
         .list-item:last-child .item-content { border-bottom: none; }
         .chevron { color: var(--text-muted); font-size: 20px; margin-left: auto; font-weight: 300; }
 
-        /* ANATOMY BODY MAP CARD */
+        /* ANATOMY MAP CARD */
         .anatomy-card { background: var(--card-bg); border-radius: 14px; margin: 0 16px 20px; padding: 20px; box-shadow: var(--shadow); display: flex; flex-direction: column; align-items: center; }
-        .anatomy-container { display: flex; justify-content: space-around; width: 100%; gap: 10px; margin-top: 10px; }
-        .body-figure { width: 130px; height: 240px; }
-        .muscle-group { transition: fill 0.3s ease; fill: var(--separator); }
-        .muscle-group.active { fill: var(--red); filter: drop-shadow(0 0 4px var(--red)); }
+        .anatomy-header { display: flex; justify-content: space-between; width: 100%; margin-bottom: 12px; font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
+        .anatomy-container { display: flex; justify-content: space-around; width: 100%; gap: 15px; }
+        .body-figure { width: 140px; height: 260px; }
+        
+        /* Детальные контуры мышц */
+        .muscle { fill: var(--separator); stroke: var(--card-bg); stroke-width: 1; transition: fill 0.4s ease; }
+        .muscle.level-0 { fill: var(--separator); }
+        .muscle.level-1 { fill: var(--green); }
+        .muscle.level-2 { fill: var(--yellow); }
+        .muscle.level-3 { fill: var(--red); }
 
         /* WORKOUT CHECKLIST */
         .chk-item { display: flex; align-items: center; padding: 14px 16px; background: var(--card-bg); border-bottom: 0.5px solid var(--separator); transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); }
@@ -132,37 +136,54 @@
         <div id="tab-home" class="tab-pane active">
             <div class="section-title">Анатомия нагрузки (Фронт / Тыл)</div>
             <div class="anatomy-card">
+                <div class="anatomy-header">
+                    <span id="label-gender-view">Мужской силуэт</span>
+                    <span>Интенсивность</span>
+                </div>
                 <div class="anatomy-container">
                     <!-- Спереди -->
-                    <svg class="body-figure" viewBox="0 0 100 200" id="body-front">
-                        <path d="M50,15 C45,15 42,20 42,26 C42,32 45,35 50,35 C55,35 58,32 58,26 C58,20 55,15 50,15 Z" fill="var(--separator)"/>
-                        <path d="M47,36 L53,36 L55,42 L45,42 Z" fill="var(--separator)"/>
+                    <svg class="body-figure" viewBox="0 0 140 280" id="body-front">
+                        <!-- Голова и шея -->
+                        <ellipse cx="70" cy="20" rx="14" ry="18" fill="var(--separator)"/>
+                        <path d="M63,36 L77,36 L79,45 L61,45 Z" fill="var(--separator)"/>
+                        
+                        <!-- Плечи / Дельты -->
+                        <path class="muscle" id="mf-shoulders-l" d="M42,46 C34,47 28,54 32,64 C37,60 41,54 44,47 Z"/>
+                        <path class="muscle" id="mf-shoulders-r" d="M98,46 C106,47 112,54 108,64 C103,60 99,54 96,47 Z"/>
+                        
                         <!-- Грудные -->
-                        <path class="muscle-group" id="m-chest-l" d="M44,45 C35,45 32,52 35,60 C40,60 46,55 48,45 Z"/>
-                        <path class="muscle-group" id="m-chest-r" d="M56,45 C65,45 68,52 65,60 C60,60 54,55 52,45 Z"/>
-                        <!-- Дельты -->
-                        <path class="muscle-group" id="m-shoulders-l" d="M30,44 C27,45 25,50 28,56 C31,52 33,48 30,44 Z"/>
-                        <path class="muscle-group" id="m-shoulders-r" d="M70,44 C73,45 75,50 72,56 C69,52 67,48 70,44 Z"/>
+                        <path class="muscle" id="mf-chest-l" d="M45,48 C35,50 34,64 43,68 C49,63 52,55 52,48 Z"/>
+                        <path class="muscle" id="mf-chest-r" d="M95,48 C105,50 106,64 97,68 C91,63 88,55 88,48 Z"/>
+                        
                         <!-- Бицепсы -->
-                        <path class="muscle-group" id="m-biceps-l" d="M26,58 C24,64 25,72 27,76 C29,72 29,64 26,58 Z"/>
-                        <path class="muscle-group" id="m-biceps-r" d="M74,58 C76,64 75,72 73,76 C71,72 71,64 74,58 Z"/>
+                        <path class="muscle" id="mf-biceps-l" d="M30,67 C26,76 28,88 32,94 C34,86 34,76 30,67 Z"/>
+                        <path class="muscle" id="mf-biceps-r" d="M110,67 C114,76 112,88 108,94 C106,86 106,76 110,67 Z"/>
+                        
                         <!-- Пресс -->
-                        <path class="muscle-group" id="m-abs" d="M44,63 L56,63 L55,85 L45,85 Z"/>
+                        <path class="muscle" id="mf-abs" d="M54,70 L86,70 L84,115 L56,115 Z"/>
+                        
                         <!-- Квадрицепсы -->
-                        <path class="muscle-group" id="m-legs-l" d="M41,95 C38,110 37,130 40,145 C44,145 46,125 46,95 Z"/>
-                        <path class="muscle-group" id="m-legs-r" d="M59,95 C62,110 63,130 60,145 C56,145 54,125 54,95 Z"/>
+                        <path class="muscle" id="mf-legs-l" d="M53,126 C43,130 40,165 47,195 C52,195 56,165 57,126 Z"/>
+                        <path class="muscle" id="mf-legs-r" d="M87,126 C97,130 100,165 93,195 C88,195 84,165 83,126 Z"/>
                     </svg>
 
                     <!-- Сзади -->
-                    <svg class="body-figure" viewBox="0 0 100 200" id="body-back">
-                        <path d="M50,15 C45,15 42,20 42,26 C42,32 45,35 50,35 C55,35 58,32 58,26 C58,20 55,15 50,15 Z" fill="var(--separator)"/>
-                        <!-- Трапеции / Спина -->
-                        <path class="muscle-group" id="m-back" d="M43,40 L57,40 L62,60 C55,68 45,68 38,60 Z"/>
+                    <svg class="body-figure" viewBox="0 0 140 280" id="body-back">
+                        <!-- Голова и шея -->
+                        <ellipse cx="70" cy="20" rx="14" ry="18" fill="var(--separator)"/>
+                        <path d="M62,36 L78,36 L81,46 L59,46 Z" fill="var(--separator)"/>
+                        
+                        <!-- Трапеции и Спина -->
+                        <path class="muscle" id="mb-back" d="M46,47 L94,47 C100,75 92,105 85,120 L55,120 C48,105 40,75 46,47 Z"/>
+                        
                         <!-- Трицепсы -->
-                        <path class="muscle-group" id="m-triceps-l" d="M25,58 C23,66 24,72 27,76 C28,70 27,64 25,58 Z"/>
-                        <path class="muscle-group" id="m-triceps-r" d="M75,58 C77,66 76,72 73,76 C72,70 73,64 75,58 Z"/>
-                        <!-- Ягодицы / Ноги сзади -->
-                        <path class="muscle-group" id="m-glutes" d="M40,90 L60,90 C62,105 58,115 50,115 C42,115 38,105 40,90 Z"/>
+                        <path class="muscle" id="mb-triceps-l" d="M29,67 C25,76 27,88 31,94 C33,86 32,76 29,67 Z"/>
+                        <path class="muscle" id="mb-triceps-r" d="M111,67 C115,76 113,88 109,94 C107,86 108,76 111,67 Z"/>
+                        
+                        <!-- Ягодицы и Ноги сзади -->
+                        <path class="muscle" id="mb-glutes" d="M50,123 L90,123 C96,145 90,165 70,165 C50,165 44,145 50,123 Z"/>
+                        <path class="muscle" id="mb-calves-l" d="M49,178 C43,195 46,220 52,235 C55,220 54,195 49,178 Z"/>
+                        <path class="muscle" id="mb-calves-r" d="M91,178 C97,195 94,220 88,235 C85,220 86,195 91,178 Z"/>
                     </svg>
                 </div>
             </div>
@@ -218,7 +239,7 @@
             <div class="section-title" style="margin-top: 10px;">Профиль атлета</div>
             <div class="list-group">
                 <div class="form-row" style="padding: 12px 16px;">
-                    <span>Пол</span>
+                    <span>Пол (влияет на силуэт)</span>
                     <select id="user-gender" onchange="saveProfile()">
                         <option value="male">Мужской</option>
                         <option value="female">Женский</option>
@@ -297,20 +318,41 @@
         window.openModal = id => document.getElementById(id).classList.add('open');
         window.closeModal = id => document.getElementById(id).classList.remove('open');
 
-        // Профиль
+        // Профиль и пропорции силуэта
         function loadProfile() {
             const p = JSON.parse(localStorage.getItem('liftos_profile') || '{"gender":"male","height":178,"age":28}');
             document.getElementById('user-gender').value = p.gender;
             document.getElementById('user-height').value = p.height;
             document.getElementById('user-age').value = p.age;
+            applyGenderSilhouette(p.gender);
         }
+
         window.saveProfile = function() {
+            const gender = document.getElementById('user-gender').value;
             const profile = {
-                gender: document.getElementById('user-gender').value,
+                gender,
                 height: document.getElementById('user-height').value,
                 age: document.getElementById('user-age').value
             };
             localStorage.setItem('liftos_profile', JSON.stringify(profile));
+            applyGenderSilhouette(gender);
+        }
+
+        function applyGenderSilhouette(gender) {
+            const front = document.getElementById('body-front');
+            const back = document.getElementById('body-back');
+            const label = document.getElementById('label-gender-view');
+            
+            if (gender === 'female') {
+                label.innerText = "Женский силуэт";
+                // Корректируем пропорции SVG под женский атлетичный тип (чуть уже плечи, мягче линии)
+                front.style.transform = "scaleX(0.92)";
+                back.style.transform = "scaleX(0.92)";
+            } else {
+                label.innerText = "Мужской силуэт";
+                front.style.transform = "scaleX(1)";
+                back.style.transform = "scaleX(1)";
+            }
         }
         loadProfile();
 
@@ -352,7 +394,6 @@
             switchTab('workout', document.querySelectorAll('.tab-btn')[1]);
         }
 
-        // Рендер чек-листа
         function renderWorkout() {
             const list = document.getElementById('workout-list');
             if (currentWorkout.length === 0) {
@@ -372,38 +413,46 @@
             `).join('');
         }
 
-        // Обновление анатомической карты по ключевым словам в упражнениях
+        // Динамический хитмап мышц (Зеленый -> Желтый -> Красный в зависимости от тоннажа/подходов)
         function updateAnatomyMap() {
-            document.querySelectorAll('.muscle-group').forEach(el => el.classList.remove('active'));
-            
+            const muscles = document.querySelectorAll('.muscle');
+            muscles.forEach(el => {
+                el.className.baseVal = "muscle level-0";
+            });
+
             currentWorkout.forEach(p => {
                 const n = p.name.toLowerCase();
+                const intensity = p.weight > 90 ? 3 : (p.weight > 50 ? 2 : 1); // 1: зеленый, 2: желтый, 3: красный
+                const levelClass = `level-${intensity}`;
+
+                let targetIds = [];
                 if (n.includes('жим') || n.includes('груд') || n.includes('отжимания')) {
-                    document.getElementById('m-chest-l')?.classList.add('active');
-                    document.getElementById('m-chest-r')?.classList.add('active');
+                    targetIds = ['mf-chest-l', 'mf-chest-r'];
+                } else if (n.includes('дельт') || n.includes('жим стоя') || n.includes('махи')) {
+                    targetIds = ['mf-shoulders-l', 'mf-shoulders-r'];
+                } else if (n.includes('бицепс') || n.includes('подъем на бицепс')) {
+                    targetIds = ['mf-biceps-l', 'mf-biceps-r'];
+                } else if (n.includes('трицепс') || n.includes('брусья') || n.includes('французск')) {
+                    targetIds = ['mb-triceps-l', 'mb-triceps-r'];
+                } else if (n.includes('присед') || n.includes('ног') || n.includes('жим ногами')) {
+                    targetIds = ['mf-legs-l', 'mf-legs-r'];
+                } else if (n.includes('тяг') || n.includes('спин') || n.includes('подтягиван')) {
+                    targetIds = ['mb-back', 'mb-glutes'];
+                } else if (n.includes('пресс')) {
+                    targetIds = ['mf-abs'];
                 }
-                if (n.includes('дельт') || n.includes('жим стоя') || n.includes('махи')) {
-                    document.getElementById('m-shoulders-l')?.classList.add('active');
-                    document.getElementById('m-shoulders-r')?.classList.add('active');
-                }
-                if (n.includes('бицепс') || n.includes('подъем на бицепс')) {
-                    document.getElementById('m-biceps-l')?.classList.add('active');
-                    document.getElementById('m-biceps-r')?.classList.add('active');
-                }
-                if (n.includes('трицепс') || n.includes('брусья') || n.includes('французск')) {
-                    document.getElementById('m-triceps-l')?.classList.add('active');
-                    document.getElementById('m-triceps-r')?.classList.add('active');
-                }
-                if (n.includes('присед') || n.includes('ног') || n.includes('жим ногами')) {
-                    document.getElementById('m-legs-l')?.classList.add('active');
-                    document.getElementById('m-legs-r')?.classList.add('active');
-                }
-                if (n.includes('тяг') || n.includes('спин') || n.includes('подтягиван')) {
-                    document.getElementById('m-back')?.classList.add('active');
-                }
-                if (n.includes('пресс')) {
-                    document.getElementById('m-abs')?.classList.add('active');
-                }
+
+                targetIds.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        // Сохраняем максимальный уровень интенсивностти
+                        const currentLevel = parseInt(el.getAttribute('data-level') || '0', 10);
+                        if (intensity > currentLevel) {
+                            el.setAttribute('data-level', intensity);
+                            el.className.baseVal = `muscle ${levelClass}`;
+                        }
+                    }
+                });
             });
         }
 
